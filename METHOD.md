@@ -1,0 +1,75 @@
+# Method
+
+Rationale for the derived resources. Kept out of the sources so the scripts
+carry code only.
+
+The approach follows the author's 2015 master's thesis in computational
+linguistics and quantitative typology. Each classical estimator below is kept
+only where it outscores the alternative on the gold set.
+
+## Segmentation
+
+Viterbi over a Kneser–Ney bigram model with a token penalty, refined by EM
+re-segmentation, pruned by the relative-entropy criterion of Stolcke (1998).
+
+Gold set of 510 cases. Bigram over unigram at p < 1e-6 (McNemar), confirmed by a
+10,000-round paired bootstrap over F1.
+
+## Frequency
+
+Dispersion-corrected by deviation of proportions, per register.
+
+## Origin filter
+
+Conjunction of simplified-character detection, orthographic round-trip
+conversion, Chinese lexicon, Chinese toponyms, Cantonese particles. The erhua
+rule inspects both windows around 兒 so root uses survive.
+
+## Thesaurus
+
+Four relations, not conflated.
+
+**Synonyms, antonyms** — the 相似詞 and 相反詞 columns of both MOE dictionaries.
+Lexicographers' annotation, not inference. Symmetrized.
+
+**Paradigmatic neighbors** — Harris's distributional hypothesis: co-occurrence
+matrix, PPMI with context-distribution smoothing and shift (Levy & Goldberg
+2015), cosine between rows.
+
+    PMI_a(w,c) = log[ p(w,c) / (p(w) * p_a(c)) ],  p_a(c) ~ #(c)^a
+
+a = 0.75 damps the PMI bias toward rare contexts. The shift −log k cuts weak
+associations, as in SGNS with k negative samples. Window ±2 beats ±4 and ±6:
+narrow windows give paradigmatic relations, wide ones drift to topical.
+
+Truncated SVD (M = U·S·Vᵀ, vector = U·Sᵖ, randomised Halko–Martinsson–Tropp) is
+implemented and stays in the sweep, but is not in the pipeline — it loses at
+every dimensionality:
+
+    window ±2, no SVD           recall 0.151   MRR 0.138
+    window ±2, SVD d=500 p=0.5  recall 0.130   MRR 0.117
+    window ±2, SVD d=300 p=0.5  recall 0.120   MRR 0.109
+    window ±2, SVD d=200 p=0.5  recall 0.111   MRR 0.101
+
+Quality rises with dimensionality, so truncation itself is the loss. At seven
+million tokens with contexts capped at three hundred the matrix is already
+near-noise-free.
+
+**Syntagmatic collocates** — two stages. Significance by Dunning's
+log-likelihood ratio (1993) over the 2×2 presence table:
+
+    G² = 2 · Σ O_ij · ln(O_ij / E_ij)
+
+G² assumes no normality and holds at low frequencies. Threshold 10.83 is
+p < 0.001 at one degree of freedom. Significance is not interest, so ranking is
+by logDice (Rychlý 2008):
+
+    logDice = 14 + log₂[ 2·f(x,y) / (f(x) + f(y)) ]
+
+Corpus-size independent; the denominator is a sum of frequencies, not a product
+of probabilities. Function words removed by official part of speech.
+
+Window, a and thresholds are set by measurement against the gold set:
+
+    python3 corpora/build_thesaurus.py
+    SWEEP=1 python3 corpora/build_thesaurus.py   # scores every combination
