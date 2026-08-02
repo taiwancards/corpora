@@ -28,7 +28,7 @@ module OriginFilter
     end
   end
 
-  def prc_hits(text) = TWFilter::Checks::Lexicon.prc_topics.select { |term|
+  def foreign_hits(text) = TWFilter::Checks::Lexicon.foreign_topics.select { |term|
     TWFilter::Checks::Lexicon.topic?(text, term)
   }
 

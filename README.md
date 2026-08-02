@@ -33,9 +33,11 @@ variables at your own copies of the sources.
 Attribution and license transparency. Home pages only: no download endpoints or
 credentials, here or in the scripts.
 
-All are Taiwan-originated. Nothing is Chinese text converted to traditional
-characters; the origin filter runs on every source and what survives is reviewed
-by hand.
+Fifteen of the twenty are natively composed in Taiwan. Three are mechanically
+converted to Taiwan orthography and two are translated from English; they are
+tagged as such on the `production` axis, counted for comparison, and excluded
+from the reference model. The origin filter runs on every source, and the
+lexical detectors fire on the converted and translated ones alone.
 
 ### Licenses permitting commercial use
 
@@ -84,9 +86,10 @@ and `lib/registers.rb` are thin adapters over the
 application also loads, so the offline pipeline and the server cannot disagree
 about sentence boundaries, the character inventory or the mainland lexicon.
 
-Measured over 987 740 sentences from fifteen sources under `Policy.corpus`:
-1.91 % rejected overall, 0.13 % for 全國法規資料庫, and the lexical detectors fire
-only on the two sources composed outside Taiwan and mechanically converted.
+Measured over 987 740 sentences from fifteen sources under `Policy.corpus`,
+twfilter 0.1.0: 2.36 % rejected overall, 0.12 % for 全國法規資料庫, and the lexical
+detectors fire on no natively composed source — only on the sources converted or
+translated from outside Taiwan, and on open web comments.
 
 ## Provenance axes
 
