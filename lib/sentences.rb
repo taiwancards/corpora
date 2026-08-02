@@ -3,8 +3,7 @@
 require_relative "origin_filter"
 
 module Sentences
-  SENT_END = /(?<=[。！？])/
-  TERMINAL = %w[。 ！ ？].freeze
+  POLICY = TWFilter::Policy.corpus
 
   module_function
 
@@ -12,20 +11,19 @@ module Sentences
 
   def out_dir = own("sentences")
 
-  def han_length(text) = text.unpack("U*").count { |code| code >= 0x4E00 && code <= 0x9FFF }
+  def han_length(text) = TWFilter::Han.count(text)
 
   def shaped?(text, min_han: 6, max_han: 60, min_ratio: 0.65)
-    han = han_length(text)
-    (min_han..max_han).cover?(han) && han.fdiv([text.length, 1].max) >= min_ratio
+    TWFilter::Sentences.shaped?(text, policy: POLICY.with(han_range: (min_han..max_han), min_han_ratio: min_ratio))
   end
 
   def usable?(text, min_han: 6, max_han: 60, min_ratio: 0.65)
     shaped?(text, min_han:, max_han:, min_ratio:) && OriginFilter.keep?(text)
   end
 
-  def terminal?(text) = TERMINAL.any? { |mark| text.end_with?(mark) }
+  def terminal?(text) = TWFilter::Sentences.terminal?(text)
 
-  def pieces_of(line) = line.split(SENT_END).filter_map { |piece| Corpus.strip(piece).presence }
+  def pieces_of(line) = TWFilter::Sentences.split(TWFilter.normalize(line), clause: false)
 
   def thin(rows, cap)
     return rows if cap.nil? || rows.length <= cap
@@ -42,19 +40,14 @@ module Sentences
     unique
   end
 
-  def each_gz_line(path)
-    return to_enum(:each_gz_line, path) unless block_given?
+  def each_gz_line(path, &) = each_compressed_line(["gzip", "-dc", path.to_s], &)
 
-    IO.popen(["gzip", "-dc", path.to_s], "rb") do |io|
-      io.set_encoding("utf-8", invalid: :replace, undef: :replace)
-      io.each_line { |line| yield line }
-    end
-  end
+  def each_bz2_line(path, &) = each_compressed_line(["bzip2", "-dc", path.to_s], &)
 
-  def each_bz2_line(path)
-    return to_enum(:each_bz2_line, path) unless block_given?
+  def each_compressed_line(command)
+    return to_enum(:each_compressed_line, command) unless block_given?
 
-    IO.popen(["bzip2", "-dc", path.to_s], "rb") do |io|
+    IO.popen(command, "rb") do |io|
       io.set_encoding("utf-8", invalid: :replace, undef: :replace)
       io.each_line { |line| yield line }
     end

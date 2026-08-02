@@ -3,35 +3,19 @@
 require_relative "sentences"
 
 module Registers
-  SENTENCE_SPLIT = /(?<=[。！？；])/
-  BLOCK = 300
-  BLOCK_TOLERANCE = 0.0
-  EVIDENCE_PER_100 = 1.0
+  BLOCK = TWFilter::Block::SIZE
+  POLICY = TWFilter::Policy.new(han_range: (1..Float::INFINITY), min_han_ratio: 0.0, max_tier: :rare)
 
   module_function
 
-  def judge(window, tolerance: BLOCK_TOLERANCE, evidence_per_100: EVIDENCE_PER_100)
-    return [] if window.empty?
+  def sentence_split(text) = TWFilter::Sentences.split(text, clause: true)
 
-    verdicts = window.map { |line| OriginFilter.keep?(line) }
-    return [] if verdicts.count(false) > tolerance * window.length
-    return [] if OriginFilter.evidence(window.join) < evidence_per_100 * window.length / 100
-
-    window.zip(verdicts).filter_map { |line, ok| line if ok }
+  def judge(window, tolerance: nil, evidence_per_100: nil)
+    policy = POLICY
+    policy = policy.with(block_tolerance: tolerance) if tolerance
+    policy = policy.with(evidence_per_100: evidence_per_100) if evidence_per_100
+    TWFilter::Block.judge(window, policy: policy)
   end
 
-  def taiwanese_blocks(lines, block: BLOCK)
-    return to_enum(:taiwanese_blocks, lines, block:) unless block_given?
-
-    window = []
-    lines.each do |line|
-      window << line
-      next if window.length < block
-
-      judge(window).each { |kept| yield kept }
-      window = []
-    end
-
-    judge(window).each { |kept| yield kept } if window.any?
-  end
+  def taiwanese_blocks(lines, block: BLOCK, &) = TWFilter::Block.each_kept(lines, size: block, policy: POLICY, &)
 end

@@ -65,7 +65,7 @@ end
 
 def sentences_of(paragraphs)
   paragraphs.flat_map { |paragraph|
-    paragraph.split(Registers::SENTENCE_SPLIT).filter_map { |piece|
+    TWFilter::Sentences.split(paragraph).filter_map { |piece|
       text = Corpus.strip(piece)
       text if !text.empty? && shaped?(text)
     }

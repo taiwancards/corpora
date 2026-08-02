@@ -8,7 +8,6 @@ require "zlib"
 
 require_relative "lib/origin_filter"
 
-SENT_END = /(?<=[。！？])/
 TERMINAL = %w[。 ！ ？].freeze
 TAG = /<[^>]+>/
 SPEAKER = /\A[[:word:]·]{2,20}[：:]/
@@ -57,7 +56,7 @@ def write(slug, sentences)
 end
 
 def pieces_of(line)
-  line.split(SENT_END).filter_map { |piece| Corpus.strip(piece).presence }
+  TWFilter::Sentences.split(line, clause: false).filter_map { |piece| Corpus.strip(piece).presence }
 end
 
 def clean_wikitext(text)

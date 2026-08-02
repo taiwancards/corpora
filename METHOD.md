@@ -21,9 +21,23 @@ Dispersion-corrected by deviation of proportions, per register.
 
 ## Origin filter
 
-Conjunction of simplified-character detection, orthographic round-trip
-conversion, Chinese lexicon, Chinese toponyms, Cantonese particles. The erhua
-rule inspects both windows around 兒 so root uses survive.
+Implemented in [twfilter](https://github.com/taiwan-corpora/twfilter) and shared
+with the Rails application. Conjunction of MOE character-chart membership,
+simplified-character detection over an OpenCC round-trip, mainland traditional
+orthography, corpus-verified mainland lexicon (168 hard, 36 soft), Cantonese
+particles, PRC realia and literary-Chinese density. The erhua rule inspects both
+windows around 兒 so root uses survive.
+
+Grading of lexical candidates: hard if the mainland form is absent from a nine-
+source native reference corpus and the Taiwan form is attested at least three
+times; soft if the Taiwan form dominates by 20 : 1; rejected otherwise. 595 of
+780 candidates from the OpenCC `TWPhrases` table were rejected — that table is
+an IT-register conversion list in which 程序, 支持, 設備, 文件 and 質量 are
+ordinary Taiwanese words, and using it naively flags 8.83 % of the ROC statute
+book.
+
+Measured over 987 740 sentences from fifteen sources: 1.91 % rejected overall,
+0.13 % for 全國法規資料庫 with zero lexical rejections.
 
 ## Thesaurus
 

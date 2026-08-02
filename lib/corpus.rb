@@ -114,6 +114,8 @@ module Corpus
   end
 
   def cores
+    return ENV["TWP_CORES"].to_i.clamp(1, 1024) if ENV["TWP_CORES"].to_i.positive?
+
     levels = Etc.nprocessors
     return levels unless RbConfig::CONFIG["host_os"].include?("darwin")
 

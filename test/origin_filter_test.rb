@@ -14,10 +14,10 @@ class OriginFilterTest < Minitest::Test
   end
 
   def test_rejects_mainland_vocabulary
-    verdict = OriginFilter.inspect_text("請看這個視頻，然後給我發信息。")
+    verdict = OriginFilter.inspect_text("請把這個信息轉發給所有的同事。")
 
     refute(verdict.ok?)
-    assert(verdict.reasons.any? { |reason| reason.start_with?("mainland vocabulary") })
+    assert(verdict.reasons.any? { |reason| reason.start_with?("mainland") })
   end
 
   def test_exception_list_protects_legitimate_compounds
@@ -29,7 +29,7 @@ class OriginFilterTest < Minitest::Test
     verdict = OriginFilter.inspect_text("你食咗飯未呀，我哋而家去邊度？")
 
     refute(verdict.ok?)
-    assert(verdict.reasons.any? { |reason| reason.start_with?("Cantonese particles") })
+    assert(verdict.reasons.any? { |reason| reason.start_with?("cantonese") })
   end
 
   def test_evidence_counts_taiwan_specific_usage

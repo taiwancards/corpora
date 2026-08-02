@@ -76,16 +76,40 @@ sources is redistributed.
 The application separates the two classes at import and records the license of
 every source beside the material derived from it.
 
+## Origin filtering
+
+The origin filter is not defined here. `lib/origin_filter.rb`, `lib/sentences.rb`
+and `lib/registers.rb` are thin adapters over the
+[twfilter](https://github.com/taiwan-corpora/twfilter) gem, which the Rails
+application also loads, so the offline pipeline and the server cannot disagree
+about sentence boundaries, the character inventory or the mainland lexicon.
+
+Measured over 987 740 sentences from fifteen sources under `Policy.corpus`:
+1.91 % rejected overall, 0.13 % for 全國法規資料庫, and the lexical detectors fire
+only on the two sources composed outside Taiwan and mechanically converted.
+
+## Provenance axes
+
+Every source in `data/content_sources.json` carries four independent axes —
+`medium`, `production`, `formality`, `purpose` — in addition to the derived
+`register` label. `build_frequency.rb` uses `production` to select the reference
+model: `native` by default, `FREQUENCY_PRODUCTION=native,converted,translated`
+for the full model, written to `corpus_frequency_full.json`.
+
+## Resources
+
+`TWP_CORES` bounds `Corpus.each_slice_parallel`. Volume, wall time, CPU seconds
+and peak resident size for anything run through twpipeline are recorded in
+`work/benchmarks.jsonl`.
+
 ## Method
 
 Viterbi over Kneser–Ney bigrams with a token penalty, EM re-segmentation,
 entropy pruning. Frequency dispersion-corrected by deviation of proportions.
-Origin filter over simplified characters, orthographic round-trip, Chinese
-lexicon and toponyms, Cantonese particles. Gold set of 510 cases; bigram over
-unigram at p < 1e-6 (McNemar), confirmed by paired bootstrap over F1.
-Collocation significance by Dunning's log-likelihood, ranked by logDice.
-Phonetic series scored by modal 廣韻 rhyme group over the members sharing a
-component; confusability by inverse-document-frequency weighted Jaccard over
-CNS component sets.
+Gold set of 510 cases; bigram over unigram at p < 1e-6 (McNemar), confirmed by
+paired bootstrap over F1. Collocation significance by Dunning's log-likelihood,
+ranked by logDice. Phonetic series scored by modal 廣韻 rhyme group over the
+members sharing a component; confusability by inverse-document-frequency
+weighted Jaccard over CNS component sets.
 
 Details and measurements in [METHOD.md](METHOD.md).

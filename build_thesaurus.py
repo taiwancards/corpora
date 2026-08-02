@@ -77,6 +77,7 @@ FUNCTION_WORDS = set(
     "現在",
 }
 
+
 def read_xlsx(name):
     path = os.path.join(CORPORA, "moedict", name)
     book = openpyxl.load_workbook(path, read_only=True)
@@ -87,6 +88,7 @@ def read_xlsx(name):
     for row in rows:
         yield row, index
     book.close()
+
 
 def parse_list(cell):
     if not cell:
@@ -99,6 +101,7 @@ def parse_list(cell):
         if part and HAN.match(part):
             out.append(part)
     return out
+
 
 def dictionary_relations():
     synonyms = collections.defaultdict(set)
@@ -130,6 +133,7 @@ def dictionary_relations():
         },
     )
 
+
 def dictionary_words():
     words = set()
     with open(os.path.join(CORPORA, "concised.json"), encoding="utf-8") as handle:
@@ -152,6 +156,7 @@ def dictionary_words():
                 or [form.strip() for form in re.split(r"[/／]", row["Traditional"])]
             )
     return {word for word in words if word and HAN.match(word)}
+
 
 def segment(words):
     prefixes = set()
@@ -188,6 +193,7 @@ def segment(words):
                 add(None)
     return tokens
 
+
 def cached_stream(words):
     if os.path.exists(CACHE):
         stored = np.load(CACHE, allow_pickle=False)
@@ -202,6 +208,7 @@ def cached_stream(words):
     np.savez_compressed(CACHE, stream=stream, tokens=np.array(alphabet))
     return stream, alphabet
 
+
 def restrict(stream, alphabet, keep):
     mapping = np.full(len(alphabet) + 1, -1, dtype=np.int32)
     for number, token in enumerate(alphabet):
@@ -210,6 +217,7 @@ def restrict(stream, alphabet, keep):
             mapping[number] = position
     shifted = np.where(stream >= 0, stream, len(alphabet))
     return mapping[shifted]
+
 
 def pair_counts(stream, size, window, symmetric=True):
     keys = []
@@ -240,6 +248,7 @@ def pair_counts(stream, size, window, symmetric=True):
     total = np.add.reduceat(weights, start)
     return unique, total
 
+
 def sppmi_rows(keys, counts, size, alpha, shift, min_count):
     keep = counts >= min_count
     keys = keys[keep]
@@ -262,6 +271,7 @@ def sppmi_rows(keys, counts, size, alpha, shift, min_count):
     positive = value > 0
     return targets[positive], contexts[positive], value[positive]
 
+
 def build_space(targets, contexts, values, size, top_contexts):
     matrix = np.zeros((size, size), dtype=np.float32)
     order = np.lexsort((-values, targets))
@@ -280,6 +290,7 @@ def build_space(targets, contexts, values, size, top_contexts):
     np.divide(matrix, norms, out=matrix, where=norms > 0)
     return matrix
 
+
 def randomized_svd(
     matrix, dimensions, oversampling=SVD_OVERSAMPLING, iterations=SVD_ITERATIONS
 ):
@@ -297,12 +308,14 @@ def randomized_svd(
     left, singular, _ = np.linalg.svd(small, full_matrices=False)
     return (basis @ left)[:, :dimensions], singular[:dimensions]
 
+
 def embed(matrix, dimensions, power):
     left, singular = randomized_svd(matrix, dimensions)
     vectors = left * (singular**power)
     norms = np.linalg.norm(vectors, axis=1, keepdims=True)
     np.divide(vectors, norms, out=vectors, where=norms > 0)
     return vectors
+
 
 def cosine_neighbors(matrix, limit, block=512):
     size = matrix.shape[0]
@@ -320,6 +333,7 @@ def cosine_neighbors(matrix, limit, block=512):
                 (int(other), float(row[other])) for other in top if row[other] > 0
             ]
     return found
+
 
 COARSE = {
     "N": "N",
@@ -339,12 +353,14 @@ COARSE = {
     "M": "M",
 }
 
+
 def parts_of_speech_table():
     path = os.path.join(DATA, "huayu", "parts_of_speech.json")
     if not os.path.exists(path):
         return {}
     with open(path, encoding="utf-8") as handle:
         return json.load(handle)
+
 
 def coarse_classes(vocabulary, table):
     classes = {}
@@ -354,6 +370,7 @@ def coarse_classes(vocabulary, table):
         if found:
             classes[number] = found
     return classes
+
 
 def function_words(vocabulary, table):
     closed = set()
@@ -367,8 +384,10 @@ def function_words(vocabulary, table):
             closed.add(number)
     return closed
 
+
 def log_dice(observed, left, right):
     return 14 + np.log2(2 * observed / (left + right))
+
 
 def log_likelihood(keys, counts, size, min_count):
     marginals = np.bincount(
@@ -406,6 +425,7 @@ def log_likelihood(keys, counts, size, min_count):
     attracted = (observed > expected) & (g2 >= COLLOCATE_MIN_G2)
     return first[attracted], second[attracted], dice[attracted]
 
+
 def evaluate(found, index, synonyms, at):
     hits = 0
     total = 0
@@ -431,6 +451,7 @@ def evaluate(found, index, synonyms, at):
         "recall": round(hits / total, 4) if total else 0.0,
         "MRR": round(reciprocal / covered, 4) if covered else 0.0,
     }
+
 
 def main():
     synonyms, antonyms = dictionary_relations()
@@ -580,6 +601,7 @@ def main():
         f"  with collocates  : {sum(1 for e in payload.values() if e.get('collocates'))}"
     )
     print(f"-> {OUT}")
+
 
 if __name__ == "__main__":
     main()

@@ -16,10 +16,16 @@ WEIGHTS = {
 ROUNDS = 3
 CORPUS_HAN_RUN = /[\u{4E00}-\u{9FFF}]+/
 
+PRODUCTION = ENV.fetch("FREQUENCY_PRODUCTION", "native").split(",").freeze
+MODEL = PRODUCTION == %w[native] ? "" : "_full"
+OUT_DIR = "huayu/frequency#{MODEL}"
+OUT_FILE = "huayu/corpus_frequency#{MODEL}.json"
+
 def sources
   Corpus
     .read_json(Corpus.data("content_sources.json"))
-    .filter_map { |row| [row["slug"], row["register"]] if row["register"] }
+    .select { |row| row["register"] && PRODUCTION.include?(row.fetch("production", "native")) }
+    .map { |row| [row["slug"], row["register"]] }
 end
 
 def texts(slug)
@@ -75,7 +81,7 @@ by_register.sort.each do |register, (word_counts, char_counts)|
     "tokens" => total,
     "words" => per_million(word_counts, total).sort.to_h
   }
-  Corpus.write_json(Corpus.data("huayu/frequency/#{register}.json"), payload)
+  Corpus.write_json(Corpus.data("#{OUT_DIR}/#{register}.json"), payload)
   Corpus.report("-> #{register}.json", words: payload["words"].size, tokens: total)
 end
 
@@ -143,11 +149,18 @@ payload = {
   "words" => column(entries, "words", "f")
 }
 
-target = Corpus.write_json(Corpus.data("huayu/corpus_frequency.json"), payload)
+target = Corpus.write_json(Corpus.data(OUT_FILE), payload)
 
 Corpus.say("")
 Corpus.report("combined model", words: entries["words"].size, characters: entries["chars"].size, path: target.basename)
-Corpus.say("weights: " + WEIGHTS.sort_by { |_, value| -value }.map { |key, value| "#{key} #{value}" }.join(", "))
+applied = by_register.keys.to_h { |register| [register, WEIGHTS.fetch(register, 0.0)] }.reject { |_, value|
+  value.zero?
+}
+Corpus.say("production: #{PRODUCTION.join(", ")}")
+Corpus.say(
+  "weights: " +
+    applied.sort_by { |_, value| -value }.map { |key, value| format("%s %.3f", key, value / used) }.join(", ")
+)
 Corpus.say("")
 Corpus.say("top 15 by raw frequency:")
 entries["words"].max_by(15) { |_, entry| entry["f"] }.each do |token, entry|

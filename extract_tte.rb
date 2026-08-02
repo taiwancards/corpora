@@ -5,7 +5,6 @@ require_relative "lib/sentences"
 
 include(Sentences)
 
-SENTENCE_SPLIT = /(?<=[。！？])/
 WIKI = /wikipedia\.org|wikisource\.org|wiktionary\.org/
 
 def documents(path)
@@ -48,7 +47,7 @@ files.each do |path|
   before = out.length
 
   documents(path) do |document|
-    document.split(SENTENCE_SPLIT).each do |piece|
+    TWFilter::Sentences.split(document, clause: false).each do |piece|
       text = Corpus.strip(piece)
       next if text.empty? || !seen.add?(text)
       next unless usable?(text)

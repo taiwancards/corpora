@@ -9,10 +9,9 @@ include(Sentences)
 SUBTITLE_JUNK = /字幕|翻譯|校對|時間軸|後製|論壇|轉載|壓製|壓制|片源|發佈|訂閱|頻道|@|http|www\.|\d{1,2}:\d{2}:\d{2}|本片|製作組|人人影視|伊甸園/
 MARKUP = /\{[^}]*\}|<[^>]*>|\[[^\]]*\]|（[^）]*）|\([^)]*\)/
 LEAD = /\A[-–—•[[:space:]]　]+/
-SENTENCE_SPLIT = Registers::SENTENCE_SPLIT
 
 WIKI_SENTENCE_MIN = 8
-BLOCK_TOLERANCE = Registers::BLOCK_TOLERANCE
+BLOCK_TOLERANCE = Registers::POLICY.block_tolerance
 
 SKIP_TITLES = /\A(Wikipedia|Template|Category|File|Help|Portal|MediaWiki|模板|分類|檔案|幫助|維基百科|Module):/
 MODERN = /[的了是在有和]/
@@ -99,7 +98,7 @@ def extract_ted(cap: Integer(ENV.fetch("TED_CAP", "200000")))
   return Corpus.say("ted: no file, skipped") unless path.exist?
 
   pieces = Sentences.each_gz_line(path).flat_map { |raw|
-    clean_line(raw).split(SENTENCE_SPLIT).filter_map { |piece|
+    TWFilter::Sentences.split(clean_line(raw)).filter_map { |piece|
       text = Corpus.strip(piece)
       text if !text.empty? && shaped?(text)
     }
@@ -120,7 +119,7 @@ def extract_wikipedia(cap: Integer(ENV.fetch("WIKI_CAP", "250000")))
   wiki_pages(path) do |title, body|
     next if title.nil? || title.match?(SKIP_TITLES)
 
-    page = body.split(SENTENCE_SPLIT).filter_map { |piece|
+    page = TWFilter::Sentences.split(body).filter_map { |piece|
       text = Corpus.strip(piece)
       text if !text.empty? && shaped?(text, min_han: WIKI_SENTENCE_MIN) && text.match?(MODERN)
     }
@@ -144,7 +143,7 @@ def extract_wikisource_dump(cap: Integer(ENV.fetch("WIKISOURCE_CAP", "200000")))
   wiki_pages(path) do |title, body|
     next if title.nil? || title.match?(SKIP_TITLES)
 
-    page = body.split(SENTENCE_SPLIT).filter_map { |piece|
+    page = TWFilter::Sentences.split(body).filter_map { |piece|
       text = Corpus.strip(piece)
       text if !text.empty? && shaped?(text) && baihua?(text)
     }

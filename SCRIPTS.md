@@ -106,10 +106,13 @@ Under `rails/`. These need the application environment.
 
 `lib/` holds the shared code: `corpus.rb` (paths, JSON, `.env`, fork-based
 parallelism), `segmenter.rb` and `bigram_model.rb` (Viterbi, Kneser–Ney),
-`pruning.rb` (entropy-based pruning), `origin_filter.rb` (rejection of
-non-Taiwanese text), `sentences.rb`, `registers.rb`, `http.rb`,
+`pruning.rb` (entropy-based pruning), `http.rb`,
 `spreadsheet.rb` (ODS and XLSX reader over the raw XML, no gem dependency),
 `python_random.rb` (Mersenne Twister, for reproducing Python's sampling).
+
+`origin_filter.rb`, `sentences.rb` and `registers.rb` are thin adapters over the
+[twfilter](https://github.com/taiwan-corpora/twfilter) gem; the linguistic
+decisions themselves live there and are shared with the Rails application.
 
 ## Method
 
