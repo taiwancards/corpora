@@ -6,11 +6,15 @@ require "json"
 require "open-uri"
 require "rubygems/package"
 
-REPO = ENV.fetch("REPO", "fsicoli/common_voice_22_0")
+require_relative "lib/corpus"
+
+REPO = Corpus.source(:COMMON_VOICE_DATASET_ID)
 LOCALE = "zh-TW"
-BASE = "https://huggingface.co/datasets/#{REPO}/resolve/main"
+HOST = Corpus.source(:COMMON_VOICE_BASE_URL).chomp("/")
+BASE = "#{HOST}/datasets/#{REPO}/resolve/main"
+LISTING = "#{HOST}/api/datasets/#{REPO}/tree/main/audio/#{LOCALE}"
 BUCKETS = %w[train dev test other].freeze
-MAX_LEVEL = (ENV["MAX_LEVEL"] || 9).to_i
+MAX_LEVEL = Integer(Corpus.env.fetch("MAX_LEVEL", "9"))
 
 root = File.expand_path("..", __dir__)
 work = File.join(root, "tmp", "cv_listening_work")
@@ -80,7 +84,7 @@ puts "to extract: #{pending.size}"
 
 pending.group_by { |_, clip| clip["bucket"] }.each do |bucket, entries|
   names = entries.to_set { |_, clip| clip["name"] }
-  listing = JSON.parse(URI.parse("https://huggingface.co/api/datasets/#{REPO}/tree/main/audio/#{LOCALE}/#{bucket}").read)
+  listing = JSON.parse(URI.parse("#{LISTING}/#{bucket}").read)
   shards = listing.filter_map { |entry| File.basename(entry["path"]) if entry["type"] == "file" }.sort
   puts "#{bucket}: #{names.size} clips across #{shards.size} shards"
 

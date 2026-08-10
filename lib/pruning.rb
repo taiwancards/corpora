@@ -8,7 +8,7 @@ module Pruning
   def load_counts(path = Corpus.corpora("bigram_counts.json"))
     payload = Corpus.read_json(path)
     bigrams = payload.fetch("bigrams").to_h { |key, count| [key.split("\t", 2), count] }
-    [bigrams, payload.fetch("history"), payload.fetch("preceders"), payload.fetch("total")]
+    [bigrams, payload.fetch("history"), payload.fetch("preceders"), payload.fetch("total"), payload["discount"]]
   end
 
   def discounts(bigrams)

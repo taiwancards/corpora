@@ -24,7 +24,7 @@ history = payload.fetch("history")
 preceders = payload.fetch("preceders")
 total = payload.fetch("total")
 
-discount = discounts(bigrams)
+discount = payload["discount"] || discounts(bigrams)
 
 continuation_total = preceders.each_value.sum
 continuation = preceders.transform_values { |value| value / continuation_total.to_f }

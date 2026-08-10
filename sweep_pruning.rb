@@ -12,8 +12,8 @@ words, = Segmenter.vocabulary(Corpus.corpora("segvocab.json"))
 limit = Segmenter.max_word(words)
 unigram = BigramModel.unigram_probabilities
 
-bigrams, history, preceders, total = Pruning.load_counts
-discount = Pruning.discounts(bigrams)
+bigrams, history, preceders, total, stored = Pruning.load_counts
+discount = stored || Pruning.discounts(bigrams)
 continuation = Pruning.continuation_table(preceders)
 continuation = continuation.transform_values { |value| [value, FLOOR].max } if FLOOR.positive?
 

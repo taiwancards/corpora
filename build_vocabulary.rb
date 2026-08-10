@@ -35,6 +35,14 @@ words = entries(base.fetch("words"))
 chars = entries(base.fetch("chars"))
 Corpus.report("application dictionary", words: words.size, characters: chars.size)
 
+supplement = Corpus.data("huayu/segmentation_vocab.json")
+if supplement.exist?
+  added = entries(Corpus.read_json(supplement).fetch("words"))
+    .select { |text| (2..MAX_LENGTH).cover?(text.length) }
+  words.merge(added)
+  Corpus.report("+ runtime supplement", headwords: added.size, words: words.size)
+end
+
 known = words | chars
 
 if %w[concised full].include?(level)

@@ -22,6 +22,19 @@ fetch → parse → build vocabulary → frequency → bigrams → prune
 
 Each stage reads the output of the previous one.
 
+The vocabulary stage is not optional before a bigram rebuild. `segvocab.json` is
+the word list the counts are tokenised with, and a word missing from it gets a
+count of zero, which no amount of corpus can repair — the segmenter simply never
+proposes it. Refresh the export first:
+
+```text
+bin/rails runner corpora/export_dict.rb
+VOCAB_LEVEL=app bundle exec ruby corpora/build_vocabulary.rb
+```
+
+`bundle exec rails huayu:segmentation_drift` reports what the shipped model has
+never seen. It should be close to zero after a rebuild.
+
 ## Collection
 
 Downloads raw material into `CORPORA_DIR`. Slow and rate-limited; run only when
@@ -60,6 +73,9 @@ Produces the files the application reads at runtime.
 | `build_frequency.rb` | frequency and dispersion, per register | `bundle exec ruby corpora/build_frequency.rb` |
 | `build_corpus_frequency.rb` | frequency over the reference corpora | `bundle exec ruby corpora/build_corpus_frequency.rb` |
 | `build_bigrams.rb` | Kneser–Ney bigram counts | `bundle exec ruby corpora/build_bigrams.rb` |
+| `build_web_runs.rb` | Han runs from the HPLT Taiwan slice, one host per line prefix | `bundle exec ruby corpora/build_web_runs.rb` |
+| `build_web_bigrams.rb` | the same counts over the web corpus, counted once per host | `bundle exec ruby corpora/build_web_bigrams.rb` |
+| `merge_bigram_counts.rb` | blend two count files, scaled to a common total | `MERGE_PRIMARY=a.json MERGE_SECONDARY=b.json bundle exec ruby corpora/merge_bigram_counts.rb` |
 | `prune_bigrams.rb` | pruned bigram model | `bundle exec ruby corpora/prune_bigrams.rb` |
 | `build_classifiers.rb` | measure-word pairs, parts of speech | `bundle exec ruby corpora/build_classifiers.rb` |
 | `build_thesaurus.py` | synonyms, antonyms, distributional neighbors | `python3 corpora/build_thesaurus.py` |
