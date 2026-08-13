@@ -20,7 +20,7 @@ module OriginFilter
 
   def simplified = TWFilter::Checks::Script.simplified_only
 
-  def mainland_hits(text)
+  def china_hits(text)
     exceptions = TWFilter::Checks::Lexicon.exceptions
     (TWFilter::Checks::Lexicon.hard_terms.keys + TWFilter::Checks::Lexicon.soft_terms.keys).select do |term|
       allowed = exceptions[term]

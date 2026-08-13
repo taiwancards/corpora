@@ -6,7 +6,7 @@ require_relative "../lib/origin_filter"
 
 class RegistersTest < Minitest::Test
   TAIWANESE = "你有沒有搭過捷運去看那部影片啦？"
-  MAINLAND = "今天天气很好，我们一起去公园散步。"
+  CHINA = "今天天气很好，我们一起去公园散步。"
 
   def test_judge_returns_nothing_for_an_empty_window
     assert_empty(Registers.judge([]))
@@ -19,17 +19,17 @@ class RegistersTest < Minitest::Test
   end
 
   def test_judge_drops_the_whole_window_when_any_line_fails_at_zero_tolerance
-    window = Array.new(19) { TAIWANESE } + [MAINLAND]
+    window = Array.new(19) { TAIWANESE } + [CHINA]
 
     assert_empty(Registers.judge(window))
   end
 
   def test_judge_keeps_the_clean_lines_when_tolerance_allows_a_failure
-    window = Array.new(19) { TAIWANESE } + [MAINLAND]
+    window = Array.new(19) { TAIWANESE } + [CHINA]
     kept = Registers.judge(window, tolerance: 0.1)
 
     assert_equal(19, kept.length)
-    refute_includes(kept, MAINLAND)
+    refute_includes(kept, CHINA)
   end
 
   def test_judge_drops_a_window_with_too_little_taiwanese_evidence
@@ -43,7 +43,7 @@ class RegistersTest < Minitest::Test
   end
 
   def test_taiwanese_blocks_judges_each_full_block_on_its_own
-    lines = Array.new(4) { TAIWANESE } + Array.new(4) { MAINLAND }
+    lines = Array.new(4) { TAIWANESE } + Array.new(4) { CHINA }
 
     assert_equal(4, Registers.taiwanese_blocks(lines, block: 4).to_a.length)
   end

@@ -79,11 +79,11 @@ counts = Corpus
 
 accepted, rejected = {}, []
 
-CANDIDATES.each do |mainland, taiwan|
-  cn = counts.fetch(mainland)
+CANDIDATES.each do |china, taiwan|
+  cn = counts.fetch(china)
   tw = counts.fetch(taiwan)
 
-  reason = if mainland == taiwan
+  reason = if china == taiwan
     "identical on both sides"
   elsif cn > MAX_HITS
     "occurs in Taiwanese text"
@@ -92,9 +92,9 @@ CANDIDATES.each do |mainland, taiwan|
   end
 
   if reason
-    rejected << [mainland, taiwan, cn, tw, reason]
+    rejected << [china, taiwan, cn, tw, reason]
   else
-    accepted[mainland] = {"taiwan" => taiwan, "mainland_hits" => cn, "taiwan_hits" => tw}
+    accepted[china] = {"taiwan" => taiwan, "china_hits" => cn, "taiwan_hits" => tw}
   end
 end
 
@@ -102,7 +102,7 @@ Corpus.say("")
 Corpus.say("ACCEPTED as reliable markers: #{accepted.size}")
 accepted.sort_by { |_, info| -info["taiwan_hits"] }.each do |word, info|
   Corpus.say(
-    format("  %-10s -> %-12s %5d against %6d", word, info["taiwan"], info["mainland_hits"], info["taiwan_hits"])
+    format("  %-10s -> %-12s %5d against %6d", word, info["taiwan"], info["china_hits"], info["taiwan_hits"])
   )
 end
 
@@ -112,5 +112,5 @@ rejected.each do |word, _, cn, tw, why|
   Corpus.say(format("  %-10s (%5d against %6d)  %s", word, cn, tw, why))
 end
 
-target = Corpus.write_json(Corpus.data("huayu/mainland_markers.json"), accepted, pretty: true)
+target = Corpus.write_json(Corpus.data("huayu/china_markers.json"), accepted, pretty: true)
 Corpus.report("written", markers: accepted.size, path: target.basename)

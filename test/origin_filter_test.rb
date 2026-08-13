@@ -13,16 +13,16 @@ class OriginFilterTest < Minitest::Test
     assert_equal(0, OriginFilter.han_length("Taipei 101"))
   end
 
-  def test_rejects_mainland_vocabulary
+  def test_rejects_china_vocabulary
     verdict = OriginFilter.inspect_text("請把這個信息轉發給所有的同事。")
 
     refute(verdict.ok?)
-    assert(verdict.reasons.any? { |reason| reason.start_with?("mainland") })
+    assert(verdict.reasons.any? { |reason| reason.start_with?("china") })
   end
 
   def test_exception_list_protects_legitimate_compounds
-    assert_empty(OriginFilter.mainland_hits("電視頻道播出新聞。"))
-    refute_empty(OriginFilter.mainland_hits("這個視頻很好看。"))
+    assert_empty(OriginFilter.china_hits("電視頻道播出新聞。"))
+    refute_empty(OriginFilter.china_hits("這個視頻很好看。"))
   end
 
   def test_rejects_cantonese_particles

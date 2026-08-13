@@ -23,18 +23,18 @@ Dispersion-corrected by deviation of proportions, per register.
 
 Implemented in [twfilter](https://github.com/taiwan-corpora/twfilter) and shared
 with the Rails application. Conjunction of MOE character-chart membership,
-simplified-character detection over an OpenCC round-trip, mainland traditional
-orthography, a corpus-verified mainland lexicon (149 rejecting, 38 marking),
+simplified-character detection over an OpenCC round-trip, China's traditional
+orthography, a corpus-verified China lexicon (149 rejecting, 38 marking),
 written-Cantonese characters and Hong Kong, Cantonese-sequence and Singapore
 word forms (17 and 19), and literary-Chinese density. The erhua rule inspects
 both windows around 兒 so root uses survive.
 
 Non-Taiwanese toponyms and institutions are tagged, not rejected: subject matter
-is not provenance. Taiwanese media covers the mainland constantly, several of the
+is not provenance. Taiwanese media covers China constantly, several of the
 terms are ordinary ROC administrative vocabulary, and Taipei streets are named
-after mainland cities, so an address suffix suppresses the tag.
+after cities in China, so an address suffix suppresses the tag.
 
-Grading of lexical candidates: hard if the mainland form is absent from a ten-
+Grading of lexical candidates: hard if the China form is absent from a ten-
 source native reference corpus of 11 923 110 characters and the Taiwan form is
 attested at least three times; soft if the Taiwan form dominates by 20 : 1;
 rejected otherwise. 593 of 780 candidates from the OpenCC `TWPhrases` table were
@@ -43,13 +43,13 @@ rejected — that table is an IT-register conversion list in which 程序, 支�
 8.83 % of the ROC statute book.
 
 The reference corpus excludes sources with an open authorship gate. Every
-mainland form attested anywhere in the wider corpus occurs in open web comments
-and nowhere else, so counting them would license mainland commenters' vocabulary
+China form attested anywhere in the wider corpus occurs in open web comments
+and nowhere else, so counting them would license China commenters' vocabulary
 as Taiwanese.
 
 Measured over 987 740 sentences from fifteen sources under twfilter 0.1.0:
 2.36 % rejected overall, 0.12 % for 全國法規資料庫 with zero lexical and zero
-orthographic rejections. Mainland orthography fires 67 times across 424 024
+orthographic rejections. China orthography fires 67 times across 424 024
 natively composed sentences against 1 278 times across 563 716 that are not.
 
 ## Thesaurus

@@ -99,7 +99,7 @@ Measurement only; these write no runtime files.
 | `compare_models.rb` | model comparison on the gold set | `bundle exec ruby corpora/compare_models.rb` |
 | `mine_disagreements.rb` | cases where models disagree | `bundle exec ruby corpora/mine_disagreements.rb` |
 | `stats_corpora.rb` | size and composition of every corpus | `bundle exec ruby corpora/stats_corpora.rb` |
-| `verify_mainland_markers.rb` | mainland-marker precision | `bundle exec ruby corpora/verify_mainland_markers.rb` |
+| `verify_china_markers.rb` | China-marker precision | `bundle exec ruby corpora/verify_china_markers.rb` |
 
 ## Database maintenance
 

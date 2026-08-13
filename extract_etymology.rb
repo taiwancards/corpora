@@ -48,7 +48,7 @@ end
 
 result = {}
 seen = 0
-not_ours = foreign = no_etymology = mainland_text = 0
+not_ours = foreign = no_etymology = china_text = 0
 
 source.each_line do |line|
   entry = begin
@@ -77,7 +77,7 @@ source.each_line do |line|
   end
 
   if text.match?(REGIONAL_NOTE)
-    mainland_text += 1
+    china_text += 1
     next
   end
 
@@ -90,6 +90,6 @@ target = Corpus.write_json(Corpus.corpora("etymology.json"), result)
 Corpus.report("entries scanned", total: seen)
 Corpus.report("  not in our dictionary", count: not_ours)
 Corpus.report("  foreign labels", count: foreign)
-Corpus.report("  mainland wording", count: mainland_text)
+Corpus.report("  China wording", count: china_text)
 Corpus.report("  no etymology", count: no_etymology)
 Corpus.report("ETYMOLOGIES", collected: result.size, path: target.basename)

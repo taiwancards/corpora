@@ -84,7 +84,7 @@ The origin filter is not defined here. `lib/origin_filter.rb`, `lib/sentences.rb
 and `lib/registers.rb` are thin adapters over the
 [twfilter](https://github.com/taiwan-corpora/twfilter) gem, which the Rails
 application also loads, so the offline pipeline and the server cannot disagree
-about sentence boundaries, the character inventory or the mainland lexicon.
+about sentence boundaries, the character inventory or the China lexicon.
 
 Measured over 987 740 sentences from fifteen sources under `Policy.corpus`,
 twfilter 0.1.0: 2.36 % rejected overall, 0.12 % for 全國法規資料庫, and the lexical

@@ -21,8 +21,8 @@ MARKUP = /'''?|=+|\*+|#+|\|/
 PTT_BLOCKLIST = /幹你|幹爆|幹拎|靠北|靠杯|雞掰|機掰|智障|白癡|白痴|廢物|三小|去死|媽的|他媽|你媽|婊|妓|屌|肛|強姦|自殺|做愛|性交|性愛|打炮|約炮|嫖|賣淫|援交|A片|自慰|手淫|吸毒|毒品|強暴|亂倫|勃起|陰莖|陰道|保險套|射精|裸照|情色|色情/
 
 TAIWAN = /臺灣|台灣|臺北|台北|高雄|臺中|台中|臺南|台南|新北|桃園|基隆|新竹|嘉義|苗栗|彰化|南投|雲林|屏東|宜蘭|花蓮|臺東|台東|澎湖|金門|馬祖|墾丁|阿里山|日月潭/
-MAINLAND = /北京|上海|廣州|深圳|重慶|成都|武漢|西安|杭州|南京|天津|香港|澳門|廣東|福建|浙江|江蘇|山東|河南|四川|湖南|湖北|遼寧/
-MAINLAND_QUOTES = /[“”]/
+CHINA = /北京|上海|廣州|深圳|重慶|成都|武漢|西安|杭州|南京|天津|香港|澳門|廣東|福建|浙江|江蘇|山東|河南|四川|湖南|湖北|遼寧/
+CHINA_QUOTES = /[“”]/
 
 def own(*parts) = Pathname(ENV.fetch("OWN_CORPORA_DIR") { Corpus.data("corpora").to_s }).join(*parts)
 
@@ -218,11 +218,11 @@ def extract_ptt(limit: Integer(ENV.fetch("PTT_LIMIT", "50000")))
 end
 
 def about_taiwan?(title, body)
-  return false if title.match?(MAINLAND)
+  return false if title.match?(CHINA)
   return true if title.match?(TAIWAN)
 
   tw = body.scan(TAIWAN).length
-  cn = body.scan(MAINLAND).length
+  cn = body.scan(CHINA).length
   tw >= 5 && tw > cn * 3
 end
 
@@ -279,7 +279,7 @@ def extract_wikivoyage
     "wikivoyage",
     scan_parallel(wanted) { |_, body|
       clean_wikitext(body).split("\n").flat_map { |line|
-        pieces_of(line).select { |piece| !piece.match?(MAINLAND_QUOTES) && terminal?(piece) && usable?(piece) }
+        pieces_of(line).select { |piece| !piece.match?(CHINA_QUOTES) && terminal?(piece) && usable?(piece) }
       }
     }
   )
