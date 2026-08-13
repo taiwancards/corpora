@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require_relative "lib/bigram_model"
+require_relative "lib/forked"
 
 START = BigramModel::START
 EM_ROUNDS = Integer(ENV.fetch("WEB_EM_ROUNDS", "2"))
@@ -31,7 +32,17 @@ def load_corpus(path, limit)
   [runs, groups]
 end
 
-def naive_counts(runs, groups, words, limit)
+def merge_counts(partials)
+  merged = [Hash.new(0), Hash.new(0)]
+  partials.each do |pair|
+    pair.each_with_index do |counts, side|
+      counts.each { |token, count| merged[side][token] += count }
+    end
+  end
+  merged
+end
+
+def naive_shard(runs, groups, words, limit)
   word_counts = Hash.new(0)
   char_counts = Hash.new(0)
 
@@ -60,7 +71,13 @@ def naive_counts(runs, groups, words, limit)
   [word_counts, char_counts]
 end
 
-def recount(runs, groups, words, model)
+def naive_counts(runs, groups, words, limit)
+  merge_counts(
+    Forked.map(groups.length) { |shard| naive_shard(runs, groups.values_at(*shard), words, limit) }
+  )
+end
+
+def recount_shard(runs, groups, words, model)
   word_counts = Hash.new(0)
   char_counts = Hash.new(0)
 
@@ -81,8 +98,14 @@ def recount(runs, groups, words, model)
   [word_counts, char_counts]
 end
 
-def count_bigrams(runs, groups)
-  bigrams = Hash.new { |memo, key| memo[key] = Hash.new(0) }
+def recount(runs, groups, words, model)
+  merge_counts(
+    Forked.map(groups.length) { |shard| recount_shard(runs, groups.values_at(*shard), words, model) }
+  )
+end
+
+def bigram_shard(runs, groups)
+  bigrams = {}
 
   groups.each do |indices|
     here = {}
@@ -99,12 +122,29 @@ def count_bigrams(runs, groups)
     end
 
     here.each do |context, row|
-      target = bigrams[context]
+      target = (bigrams[context] ||= Hash.new(0))
       row.each_key { |token| target[token] += 1 }
     end
   end
 
+  bigrams.each_value { |row| row.default = nil }
   bigrams
+end
+
+def count_bigrams(runs, groups, &splitter)
+  merged = Hash.new { |memo, key| memo[key] = Hash.new(0) }
+  partials = Forked.map(groups.length) do |shard|
+    bigram_shard(runs, groups.values_at(*shard), &splitter)
+  end
+
+  partials.each do |partial|
+    partial.each do |context, row|
+      target = merged[context]
+      row.each { |token, count| target[token] += count }
+    end
+  end
+
+  merged
 end
 
 def aggregates(bigrams)
