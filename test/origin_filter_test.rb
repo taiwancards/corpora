@@ -17,7 +17,7 @@ class OriginFilterTest < Minitest::Test
     verdict = OriginFilter.inspect_text("請把這個信息轉發給所有的同事。")
 
     refute(verdict.ok?)
-    assert(verdict.reasons.any? { |reason| reason.start_with?("china") })
+    assert(verdict.reasons.any? { |reason| reason.start_with?("mainland") })
   end
 
   def test_exception_list_protects_legitimate_compounds
