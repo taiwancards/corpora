@@ -87,6 +87,8 @@ Produces the files the application reads at runtime.
 | `build_grammar_examples.rb` | corpus sentences that attest each grammar point | `bin/rails runner corpora/build_grammar_examples.rb` |
 | `annotate_grammar_examples.rb` | zhuyin, pinyin, segments and sentence links on every grammar example | `bin/rails runner corpora/annotate_grammar_examples.rb` |
 | `build_grammar_glossary.rb` | readings for every Han run in a grammar lesson; adds what is missing and leaves existing entries alone | `bin/rails runner corpora/build_grammar_glossary.rb` |
+| `build_course_lessons.rb` | readings for the course vocabulary, plus the practice tasks in every lesson and the test at the end of every level | `bin/rails runner corpora/build_course_lessons.rb` |
+| `build_tocfl_papers.rb` | answer keys and audio manifests for the official TOCFL mock papers held under `data/tocfl_official` | `bin/rails runner corpora/build_tocfl_papers.rb` |
 | `export_dict.rb` | dictionary export from the database | `bin/rails runner corpora/export_dict.rb` |
 
 ## Evaluation
