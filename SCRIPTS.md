@@ -84,6 +84,9 @@ Produces the files the application reads at runtime.
 | `build_sketches.rb` | word sketches: grammatical relations per headword | `bundle exec ruby corpora/build_sketches.rb` |
 | `build_moe_revised.rb` | senses of the unabridged dictionary, trimmed to the learner-relevant head | `bundle exec ruby corpora/build_moe_revised.rb` |
 | `build_naer.rb` | bilingual signage, counter and culture terminology | `bundle exec ruby corpora/build_naer.rb` |
+| `build_grammar_examples.rb` | corpus sentences that attest each grammar point | `bin/rails runner corpora/build_grammar_examples.rb` |
+| `annotate_grammar_examples.rb` | zhuyin, pinyin, segments and sentence links on every grammar example | `bin/rails runner corpora/annotate_grammar_examples.rb` |
+| `build_grammar_glossary.rb` | readings for every Han run in a grammar lesson; adds what is missing and leaves existing entries alone | `bin/rails runner corpora/build_grammar_glossary.rb` |
 | `export_dict.rb` | dictionary export from the database | `bin/rails runner corpora/export_dict.rb` |
 
 ## Evaluation
