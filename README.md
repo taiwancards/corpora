@@ -49,6 +49,7 @@ lexical detectors fire on the converted and translated ones alone.
 | [教育部成語典](https://dict.idioms.moe.edu.tw/) — MOE Dictionary of Idioms | literary | CC BY-ND 3.0 TW |
 | [國家教育研究院 TBCL](https://coct.naer.edu.tw/) — NAER proficiency benchmark examples | colloquial | NAER open government declaration |
 | [樂詞網](https://terms.naer.edu.tw/) — NAER bilingual terminology, signage and counters | official | NAER open government declaration |
+| [全國姓名統計分析](https://www.ris.gov.tw/) — Ministry of the Interior naming statistics | reference | OGDL v1 |
 | [全字庫 CNS 11643](https://www.cns11643.gov.tw/) — components, stroke order, zhuyin, syllable recordings | reference | OGDL v1 or SIL OFL 1.1 |
 | [小學堂](https://xiaoxue.iis.sinica.edu.tw/) — 廣韻 rhyme tables, Academia Sinica | reference | CC0 1.0 |
 | [立法院開放資料](https://data.ly.gov.tw/) — Legislative Yuan Open Data | colloquial | OGDL v1 |

@@ -109,6 +109,9 @@ for part in "3/場所標示壓縮檔.zip" "3/業務標示壓縮檔.zip" "3/漢�
   grab "$NAER_TERMS_BASE_URL/$part" "$ROOT/naer/$(basename "$part")"
 done
 
+need MOI_NAMES_URL
+grab "$MOI_NAMES_URL" "$ROOT/moi/names.csv"
+
 need PTT_GOSSIP_CORPUS_URL
 grab "$PTT_GOSSIP_CORPUS_URL" "$ROOT/ptt/Gossiping-QA-Dataset-2_0.csv"
 
