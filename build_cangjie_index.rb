@@ -11,7 +11,7 @@ def codes
   raw = JSON.parse(LOOKUP.read)
   first = {}
   raw.each { |code, chars| chars.each { |char| first[char] ||= code } }
-  first.to_h { |char, code| [char, Huayu::Cangjie.fifth(char, code)] }
+  first.to_h { |char, code| [char, Huayu::Cangjie.canonical(char, code)] }
 end
 
 def rows(list, first)

@@ -134,7 +134,7 @@ class Table
     return MARKED[char] if MARKED.key?(char)
     return nil if @primary[char].nil?
 
-    Huayu::Cangjie.fifth(char, @primary[char])
+    Huayu::Cangjie.canonical(char, @primary[char])
   end
 
   def codes(char) = @all[char]

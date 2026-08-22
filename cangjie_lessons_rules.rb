@@ -458,8 +458,8 @@ module CangjieContent
               "chars" => %w[麼 磨 摩]
             },
             {
-              "title" => {"ru" => "麻 → 戈木", "en" => "麻 → 戈木"},
-              "text" => {"ru" => "Тот же навес с деревьями.", "en" => "The same awning with trees."},
+              "title" => {"ru" => "麻 → 戈十金", "en" => "麻 → 戈十金"},
+              "text" => {"ru" => "Тот же навес телом.", "en" => "The same awning as a body."},
               "chars" => %w[麻 嘛]
             },
             {
@@ -498,8 +498,8 @@ module CangjieContent
           "kind" => "note",
           "tone" => "warn",
           "text" => {
-            "ru" => "Сокращение работает, только когда форма стоит головой. Отдельно или телом она набирается обычным порядком: 麻 сама по себе — 戈木木, а 合 — 人一口.",
-            "en" => "The shortcut applies only when the shape is a head. Standing alone or serving as a body it is typed the ordinary way: 麻 by itself is 戈木木, and 合 is 人一口."
+            "ru" => "Сокращение работает, только когда форма стоит головой. Отдельно или телом она набирается обычным порядком: 麻 сама по себе — 戈十金金, а 合 — 人一口.",
+            "en" => "The shortcut applies only when the shape is a head. Standing alone or serving as a body it is typed the ordinary way: 麻 by itself is 戈十金金, and 合 is 人一口."
           }
         },
         {
@@ -507,7 +507,7 @@ module CangjieContent
           "rows" => [
             {
               "char" => "麻",
-              "wrong" => "id",
+              "wrong" => "ic",
               "why" => {
                 "ru" => "Отдельный знак — полный код, а не сокращённая голова.",
                 "en" => "On its own the character takes the full code, not the shortened head."
