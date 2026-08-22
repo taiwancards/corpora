@@ -140,7 +140,10 @@ tables(Corpus.corpora(DIRECTORY)).each do |name, rows|
 
   if layout[:surname]
     counts, _sexes, young = tally(
-      layout[:body], text_at: layout[:surname], count_at: layout[:count], age_at: layout[:age]
+      layout[:body],
+      text_at: layout[:surname],
+      count_at: layout[:count],
+      age_at: layout[:age]
     )
     counts.each { |text, amount| surnames[text] += amount }
     young.each { |text, amount| surnames_young[text] += amount }

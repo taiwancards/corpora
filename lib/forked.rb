@@ -20,6 +20,7 @@ module Forked
         writer.close
         exit!(0)
       end
+
       writer.close
       [pid, reader]
     end

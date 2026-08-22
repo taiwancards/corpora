@@ -2,6 +2,7 @@
 # frozen_string_literal: true
 
 require "zlib"
+
 require_relative "lib/corpus"
 
 SOURCE = Pathname(Corpus.source(:WEB_CORPUS))

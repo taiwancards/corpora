@@ -33,7 +33,7 @@ def parse(path)
   CSV.read(path, col_sep: "\t", headers: true, quote_char: nil, encoding: "utf-8").map(&:to_h)
 end
 
-normalize = ->(text) { text.to_s.strip.gsub(/\s+/, "") }
+normalize = -> (text) { text.to_s.strip.gsub(/\s+/, "") }
 
 bucket_of = {}
 BUCKETS.each do |bucket|
@@ -62,7 +62,8 @@ wanted = Lexeme
       "ru" => row.meanings&.dig("ru")
     }
   end
-puts "sentences in our system (level <= #{MAX_LEVEL}): #{wanted.size}"
+
+puts("sentences in our system (level <= #{MAX_LEVEL}): #{wanted.size}")
 
 best = {}
 parse(fetch("#{BASE}/transcript/#{LOCALE}/validated.tsv", File.join(work, "validated.tsv"))).each do |row|
@@ -77,16 +78,17 @@ parse(fetch("#{BASE}/transcript/#{LOCALE}/validated.tsv", File.join(work, "valid
   current = best[sentence]
   best[sentence] = {"name" => name, "score" => score, "bucket" => bucket} if current.nil? || score > current["score"]
 end
-puts "matched with a downloadable clip: #{best.size}"
+
+puts("matched with a downloadable clip: #{best.size}")
 
 pending = best.reject { |_, clip| File.exist?(File.join(out_dir, clip["name"])) }
-puts "to extract: #{pending.size}"
+puts("to extract: #{pending.size}")
 
 pending.group_by { |_, clip| clip["bucket"] }.each do |bucket, entries|
   names = entries.to_set { |_, clip| clip["name"] }
   listing = JSON.parse(URI.parse("#{LISTING}/#{bucket}").read)
   shards = listing.filter_map { |entry| File.basename(entry["path"]) if entry["type"] == "file" }.sort
-  puts "#{bucket}: #{names.size} clips across #{shards.size} shards"
+  puts("#{bucket}: #{names.size} clips across #{shards.size} shards")
 
   shards.each do |shard|
     break if names.empty?
@@ -101,8 +103,9 @@ pending.group_by { |_, clip| clip["bucket"] }.each do |bucket, entries|
         names.delete(name)
       end
     end
+
     FileUtils.rm_f(tar)
-    puts "  #{shard} done, #{names.size} left"
+    puts("  #{shard} done, #{names.size} left")
   end
 end
 
@@ -112,12 +115,17 @@ manifest = best.filter_map do |sentence, clip|
   wanted[sentence].merge("clip" => clip["name"])
 end
 
-File.write(File.join(root, "media", "listening", "manifest.json"), JSON.pretty_generate({
-  "source" => "Common Voice zh-TW (CC0) via #{REPO}, best-voted validated clip per sentence, original mp3",
-  "scope" => "sentences present in our corpus, level <= #{MAX_LEVEL}",
-  "n_clips" => manifest.size,
-  "clips" => manifest.sort_by { |row| [row["level"], row["difficulty"] || 0] }
-}))
+File.write(
+  File.join(root, "media", "listening", "manifest.json"),
+  JSON.pretty_generate(
+    {
+      "source" => "Common Voice zh-TW (CC0) via #{REPO}, best-voted validated clip per sentence, original mp3",
+      "scope" => "sentences present in our corpus, level <= #{MAX_LEVEL}",
+      "n_clips" => manifest.size,
+      "clips" => manifest.sort_by { |row| [row["level"], row["difficulty"] || 0] }
+    }
+  )
+)
 
 FileUtils.rm_rf(work)
-puts "written: #{manifest.size} clips, manifest at media/listening/manifest.json"
+puts("written: #{manifest.size} clips, manifest at media/listening/manifest.json")

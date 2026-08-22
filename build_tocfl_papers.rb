@@ -9,7 +9,7 @@ media_dir = File.join(root, "media/tocfl_official")
 out = File.join(root, "data/huayu/tocfl_papers.json")
 
 unless File.directory?(papers_dir)
-  puts "no official papers under #{papers_dir}"
+  puts("no official papers under #{papers_dir}")
   exit
 end
 
@@ -34,55 +34,135 @@ sequence = lambda do |pairs, label|
       repaired << "#{label}: printed #{number} at position #{expected}"
       number = expected
     end
+
     answers[number.to_s] = letter
   end
+
   answers
 end
 
 SETS = [
-  {band: "Novice", set: 1, level: "Novice 1–2", audio: "mock_Novice_mp3_en",
-   reading: "rd_mock_test_Novice_en_201811_t.pdf", listening: "ls_mock_test_Novice_en_201811_t.pdf",
-   transcript: "ls_mock_test_Novice_listen.pdf", key: "mock_test_Novice_answer.pdf", combined: true},
-  {band: "A", set: 1, level: "A1–A2", audio: "mock_BandA_mp3_en",
-   reading: "rd_mock_test_BandA_en_t.pdf", reading_key: "rd_mock_test_BandA_answer.pdf",
-   listening: "ls_mock_test_BandA_en_t.pdf", listening_key: "ls_mock_test_BandA_answer.pdf",
-   transcript: "ls_mock_test_BandA_listen.pdf"},
-  {band: "A", set: 2, level: "A1–A2", audio: "mock2_BandA_mp3_en",
-   reading: "rd_mock2_test_BandA_en_t.pdf", reading_key: "rd_mock2_test_BandA_answer.pdf",
-   listening: "ls_mock2_test_BandA_en_t.pdf", listening_key: "ls_mock2_test_BandA_answer.pdf",
-   transcript: "ls_mock2_test_BandA_listen.pdf"},
-  {band: "A", set: 3, level: "A1–A2", audio: "mock3_BandA_mp3_en",
-   reading: "rd_mock3_test_BandA_en_t.pdf", reading_key: "rd_mock3_test_BandA_answer.pdf",
-   listening: "ls_mock3_test_BandA_en_t.pdf", listening_key: "ls_mock3_test_BandA_answer.pdf",
-   transcript: "ls_mock3_test_BandA_listen.pdf"},
-  {band: "A", set: 4, level: "A1–A2", audio: "mock4_BandA_mp3_en",
-   reading: "rd_mock4_test_BandA_en_t.pdf", reading_key: "rd_mock4_test_BandA_answer.pdf",
-   listening: "ls_mock4_test_BandA_en_t.pdf", listening_key: "ls_mock4_test_BandA_answer.pdf",
-   transcript: "ls_mock4_test_BandA_listen.pdf"},
-  {band: "A", set: 5, level: "A1–A2", audio: "mock5_BandA_mp3_en",
-   reading: "rd_mock5_test_BandA_en_t.pdf", reading_key: "rd_mock5_test_BandA_answer.pdf",
-   listening: "ls_mock5_test_BandA_en_t.pdf", listening_key: "ls_mock5_test_BandA_answer.pdf",
-   transcript: "ls_mock5_test_BandA_listen.pdf"},
-  {band: "B", set: 1, level: "B1–B2", audio: "mock_BandB_mp3",
-   reading: "rd_mock_test_BandB_t.pdf", reading_key: "rd_mock_test_BandB_answer.pdf",
-   listening: "ls_mock_test_BandB_t.pdf", listening_key: "ls_mock_test_BandB_answer.pdf",
-   transcript: "ls_mock_test_BandB_listen.pdf"},
-  {band: "B", set: 2, level: "B1–B2", audio: "mock2_BandB_mp3",
-   reading: "rd_mock2_test_BandB_t.pdf", reading_key: "rd_mock2_test_BandB_answer_t.pdf",
-   listening: "ls_mock2_test_BandB_t.pdf", listening_key: "ls_mock2_test_BandB_answer.pdf",
-   transcript: "ls_mock2_test_BandB_listen.pdf"},
-  {band: "B", set: 3, level: "B1–B2", audio: "mock3_BandB_mp3",
-   reading: "rd_mock3_test_BandB_t.pdf", reading_key: "rd_mock3_test_BandB_answer.pdf",
-   listening: "ls_mock3_test_BandB_t.pdf", listening_key: "ls_mock3_test_BandB_answer.pdf",
-   transcript: "ls_mock3_test_BandB_listen.pdf"},
-  {band: "B", set: 4, level: "B1–B2", audio: "mock4_BandB_mp3",
-   reading: "rd_mock4_test_BandB_t.pdf", reading_key: "rd_mock4_test_BandB_answer.pdf",
-   listening: "ls_mock4_test_BandB_t.pdf", listening_key: "ls_mock4_test_BandB_answer.pdf",
-   transcript: "ls_mock4_test_BandB_listen.pdf"},
-  {band: "B", set: 5, level: "B1–B2", audio: "mock5_BandB_mp3",
-   reading: "rd_mock5_test_BandB_t.pdf", reading_key: "rd_mock5_test_BandB_answer.pdf",
-   listening: "ls_mock5_test_BandB_t.pdf", listening_key: "ls_mock5_test_BandB_answer.pdf",
-   transcript: "ls_mock5_test_BandB_listen.pdf"}
+  {
+    band: "Novice",
+    set: 1,
+    level: "Novice 1–2",
+    audio: "mock_Novice_mp3_en",
+    reading: "rd_mock_test_Novice_en_201811_t.pdf",
+    listening: "ls_mock_test_Novice_en_201811_t.pdf",
+    transcript: "ls_mock_test_Novice_listen.pdf",
+    key: "mock_test_Novice_answer.pdf",
+    combined: true
+  },
+  {
+    band: "A",
+    set: 1,
+    level: "A1–A2",
+    audio: "mock_BandA_mp3_en",
+    reading: "rd_mock_test_BandA_en_t.pdf",
+    reading_key: "rd_mock_test_BandA_answer.pdf",
+    listening: "ls_mock_test_BandA_en_t.pdf",
+    listening_key: "ls_mock_test_BandA_answer.pdf",
+    transcript: "ls_mock_test_BandA_listen.pdf"
+  },
+  {
+    band: "A",
+    set: 2,
+    level: "A1–A2",
+    audio: "mock2_BandA_mp3_en",
+    reading: "rd_mock2_test_BandA_en_t.pdf",
+    reading_key: "rd_mock2_test_BandA_answer.pdf",
+    listening: "ls_mock2_test_BandA_en_t.pdf",
+    listening_key: "ls_mock2_test_BandA_answer.pdf",
+    transcript: "ls_mock2_test_BandA_listen.pdf"
+  },
+  {
+    band: "A",
+    set: 3,
+    level: "A1–A2",
+    audio: "mock3_BandA_mp3_en",
+    reading: "rd_mock3_test_BandA_en_t.pdf",
+    reading_key: "rd_mock3_test_BandA_answer.pdf",
+    listening: "ls_mock3_test_BandA_en_t.pdf",
+    listening_key: "ls_mock3_test_BandA_answer.pdf",
+    transcript: "ls_mock3_test_BandA_listen.pdf"
+  },
+  {
+    band: "A",
+    set: 4,
+    level: "A1–A2",
+    audio: "mock4_BandA_mp3_en",
+    reading: "rd_mock4_test_BandA_en_t.pdf",
+    reading_key: "rd_mock4_test_BandA_answer.pdf",
+    listening: "ls_mock4_test_BandA_en_t.pdf",
+    listening_key: "ls_mock4_test_BandA_answer.pdf",
+    transcript: "ls_mock4_test_BandA_listen.pdf"
+  },
+  {
+    band: "A",
+    set: 5,
+    level: "A1–A2",
+    audio: "mock5_BandA_mp3_en",
+    reading: "rd_mock5_test_BandA_en_t.pdf",
+    reading_key: "rd_mock5_test_BandA_answer.pdf",
+    listening: "ls_mock5_test_BandA_en_t.pdf",
+    listening_key: "ls_mock5_test_BandA_answer.pdf",
+    transcript: "ls_mock5_test_BandA_listen.pdf"
+  },
+  {
+    band: "B",
+    set: 1,
+    level: "B1–B2",
+    audio: "mock_BandB_mp3",
+    reading: "rd_mock_test_BandB_t.pdf",
+    reading_key: "rd_mock_test_BandB_answer.pdf",
+    listening: "ls_mock_test_BandB_t.pdf",
+    listening_key: "ls_mock_test_BandB_answer.pdf",
+    transcript: "ls_mock_test_BandB_listen.pdf"
+  },
+  {
+    band: "B",
+    set: 2,
+    level: "B1–B2",
+    audio: "mock2_BandB_mp3",
+    reading: "rd_mock2_test_BandB_t.pdf",
+    reading_key: "rd_mock2_test_BandB_answer_t.pdf",
+    listening: "ls_mock2_test_BandB_t.pdf",
+    listening_key: "ls_mock2_test_BandB_answer.pdf",
+    transcript: "ls_mock2_test_BandB_listen.pdf"
+  },
+  {
+    band: "B",
+    set: 3,
+    level: "B1–B2",
+    audio: "mock3_BandB_mp3",
+    reading: "rd_mock3_test_BandB_t.pdf",
+    reading_key: "rd_mock3_test_BandB_answer.pdf",
+    listening: "ls_mock3_test_BandB_t.pdf",
+    listening_key: "ls_mock3_test_BandB_answer.pdf",
+    transcript: "ls_mock3_test_BandB_listen.pdf"
+  },
+  {
+    band: "B",
+    set: 4,
+    level: "B1–B2",
+    audio: "mock4_BandB_mp3",
+    reading: "rd_mock4_test_BandB_t.pdf",
+    reading_key: "rd_mock4_test_BandB_answer.pdf",
+    listening: "ls_mock4_test_BandB_t.pdf",
+    listening_key: "ls_mock4_test_BandB_answer.pdf",
+    transcript: "ls_mock4_test_BandB_listen.pdf"
+  },
+  {
+    band: "B",
+    set: 5,
+    level: "B1–B2",
+    audio: "mock5_BandB_mp3",
+    reading: "rd_mock5_test_BandB_t.pdf",
+    reading_key: "rd_mock5_test_BandB_answer.pdf",
+    listening: "ls_mock5_test_BandB_t.pdf",
+    listening_key: "ls_mock5_test_BandB_answer.pdf",
+    transcript: "ls_mock5_test_BandB_listen.pdf"
+  }
 ].freeze
 
 OPTION_LINE = /\A\s*[(（]\s*([A-F])\s*[)）]\s*(.*)\z/
@@ -137,6 +217,7 @@ parse_items = lambda do |file|
       current["stem"] = "#{current["stem"]} #{stripped}".strip
     end
   end
+
   items << current if current
   items
 end
@@ -164,6 +245,7 @@ certain_items = lambda do |slug, file, answers|
 
     item["stem"].match?(GAP_MARK)
   end
+
   wanted.each { |item| item.delete("context") }
 
   if wanted.any?(&mangled)
@@ -210,30 +292,34 @@ SETS.each do |entry|
 
     items = skill == "reading" ? certain_items.call("#{slug_base}-#{skill}", paper, answers) : []
 
-    papers << {
-      "slug" => "#{slug_base}-#{skill}",
-      "band" => band,
-      "set" => entry[:set],
-      "level" => entry[:level],
-      "skill" => skill,
-      "paper" => paper,
-      "transcript" => (skill == "listening" ? entry[:transcript] : nil),
-      "audio" => (skill == "listening" ? entry[:audio] : nil),
-      "clips" => (skill == "listening" ? clips_for.call(entry[:audio]) : []),
-      "answers" => answers,
-      "count" => answers.size,
-      "items" => items
-    }.compact
+    papers <<
+      {
+        "slug" => "#{slug_base}-#{skill}",
+        "band" => band,
+        "set" => entry[:set],
+        "level" => entry[:level],
+        "skill" => skill,
+        "paper" => paper,
+        "transcript" => (skill == "listening" ? entry[:transcript] : nil),
+        "audio" => (skill == "listening" ? entry[:audio] : nil),
+        "clips" => (skill == "listening" ? clips_for.call(entry[:audio]) : []),
+        "answers" => answers,
+        "count" => answers.size,
+        "items" => items
+      }.compact
   end
 end
 
 File.write(out, "#{JSON.pretty_generate({"papers" => papers})}\n")
 
-puts "papers: #{papers.size}, questions: #{papers.sum { |paper| paper["count"] }}"
-puts "questions rendered as interactive items: #{papers.sum { |paper| paper["items"].size }}"
-puts "papers dropped for untrustworthy layout: #{dropped_papers.join(", ").presence || "none"}"
+puts("papers: #{papers.size}, questions: #{papers.sum { |paper| paper["count"] }}")
+puts("questions rendered as interactive items: #{papers.sum { |paper| paper["items"].size }}")
+puts("papers dropped for untrustworthy layout: #{dropped_papers.join(", ").presence || "none"}")
 papers.group_by { |paper| paper["band"] }.each do |band, rows|
-  puts "  band #{band}: #{rows.size} papers, #{rows.sum { |paper| paper["count"] }} questions, #{rows.sum { |paper| paper["clips"].size }} clips"
+  puts(
+    "  band #{band}: #{rows.size} papers, #{rows.sum { |paper| paper["count"] }} questions, #{rows.sum { |paper| paper["clips"].size }} clips"
+  )
 end
-puts "numbering repaired: #{repaired.size}"
-repaired.first(10).each { |line| puts "  #{line}" }
+
+puts("numbering repaired: #{repaired.size}")
+repaired.first(10).each { |line| puts("  #{line}") }

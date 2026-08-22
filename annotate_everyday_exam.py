@@ -31,8 +31,12 @@ def mock_text():
 
 
 def main():
-    everyday = json.load(open(os.path.join(HUAYU, "taiwan_everyday.json"), encoding="utf-8"))
-    tocfl = json.load(open(os.path.join(HUAYU, "tocfl_official.json"), encoding="utf-8"))
+    everyday = json.load(
+        open(os.path.join(HUAYU, "taiwan_everyday.json"), encoding="utf-8")
+    )
+    tocfl = json.load(
+        open(os.path.join(HUAYU, "tocfl_official.json"), encoding="utf-8")
+    )
     tbcl = json.load(open(os.path.join(HUAYU, "school_levels.json"), encoding="utf-8"))
 
     tocfl_levels = {row["traditional"]: row["level"] for row in tocfl}
@@ -50,7 +54,10 @@ def main():
         tbcl_level = next((tbcl_levels[f] for f in forms if f in tbcl_levels), None)
         hits = sum(corpus.count(f) for f in forms)
 
-        streety = item.get("origin") in STREET_ORIGINS or item.get("register") in STREET_REGISTERS
+        streety = (
+            item.get("origin") in STREET_ORIGINS
+            or item.get("register") in STREET_REGISTERS
+        )
 
         if listed_level or tbcl_level:
             status = "exam_listed"
@@ -80,8 +87,15 @@ def main():
         json.dump(everyday, f, ensure_ascii=False, indent=1)
 
     print(dict(statuses))
-    street_listed = [i["text"] for i in everyday if i["exam_status"] == "exam_listed" and (i.get("origin") in STREET_ORIGINS or i.get("register") in STREET_REGISTERS)]
-    print("street-flavored but officially listed:", len(street_listed), street_listed[:15])
+    street_listed = [
+        i["text"]
+        for i in everyday
+        if i["exam_status"] == "exam_listed"
+        and (i.get("origin") in STREET_ORIGINS or i.get("register") in STREET_REGISTERS)
+    ]
+    print(
+        "street-flavored but officially listed:", len(street_listed), street_listed[:15]
+    )
 
 
 if __name__ == "__main__":

@@ -12,7 +12,53 @@ MOCK = os.path.join(ROOT, "dict_and_corpora", "corpora", "tocfl_mock")
 POINTS = os.path.join(ROOT, "data", "huayu", "tbcl_grammar_points.json")
 OUT = os.path.join(ROOT, "data", "huayu", "tocfl_grammar_attestation.json")
 
-STOP = {"補語", "賓語", "名詞", "動詞", "形容詞", "主語", "數字", "量詞", "句子", "重疊", "成分", "省略", "用法", "表達", "結構", "句型", "疑問", "反問", "目的", "結果", "方式", "程度", "狀態", "被動", "比較", "強調", "假設", "條件", "因果", "轉折", "遞進", "並列", "選擇", "時間", "地點", "方向", "存在", "持續", "完成", "經驗", "變化", "可能", "能願", "祈使", "感嘆"}
+STOP = {
+    "補語",
+    "賓語",
+    "名詞",
+    "動詞",
+    "形容詞",
+    "主語",
+    "數字",
+    "量詞",
+    "句子",
+    "重疊",
+    "成分",
+    "省略",
+    "用法",
+    "表達",
+    "結構",
+    "句型",
+    "疑問",
+    "反問",
+    "目的",
+    "結果",
+    "方式",
+    "程度",
+    "狀態",
+    "被動",
+    "比較",
+    "強調",
+    "假設",
+    "條件",
+    "因果",
+    "轉折",
+    "遞進",
+    "並列",
+    "選擇",
+    "時間",
+    "地點",
+    "方向",
+    "存在",
+    "持續",
+    "完成",
+    "經驗",
+    "變化",
+    "可能",
+    "能願",
+    "祈使",
+    "感嘆",
+}
 HAND = {"繫動詞": [[["是"]]], "賓+被+V": [[["被"]]], "A-not-A": "ANOTA"}
 
 BANDS = {
@@ -39,8 +85,8 @@ def expand_parens(text):
     m = re.search(r"（([^）]*)）", text)
     if not m:
         return [text]
-    with_inner = text[:m.start()] + m.group(1) + text[m.end():]
-    without = text[:m.start()] + text[m.end():]
+    with_inner = text[: m.start()] + m.group(1) + text[m.end() :]
+    without = text[: m.start()] + text[m.end() :]
     return expand_parens(with_inner) + expand_parens(without)
 
 
@@ -101,8 +147,13 @@ def sentence_matches(sentence, compiled):
 def main():
     with tempfile.TemporaryDirectory() as tmp:
         bands = {band: band_text(tmp, patterns) for band, patterns in BANDS.items()}
-    sentences = {band: [s for s in re.split(r"[。？！\n]", text) if s.strip()] for band, text in bands.items()}
-    han_totals = {band: len(re.findall(r"[一-鿿]", text)) for band, text in bands.items()}
+    sentences = {
+        band: [s for s in re.split(r"[。？！\n]", text) if s.strip()]
+        for band, text in bands.items()
+    }
+    han_totals = {
+        band: len(re.findall(r"[一-鿿]", text)) for band, text in bands.items()
+    }
 
     points = json.load(open(POINTS, encoding="utf-8"))
     out = []
@@ -113,14 +164,25 @@ def main():
             for band, sents in sentences.items():
                 counts[band] = sum(1 for s in sents if sentence_matches(s, compiled))
         first = next((b for b in BANDS if counts.get(b, 0) > 0), None)
-        per_10k = {b: round(c * 10000.0 / han_totals[b], 2) for b, c in counts.items()} if counts else {}
-        out.append({
-            "id": point["id"], "pattern": point["pattern"], "tier": point["tier"],
-            "level": point["level"], "starred": point["starred"],
-            "markers": compiled if compiled != "ANOTA" else "A-not-A",
-            "counts": counts, "per_10k_han": per_10k, "first_band": first,
-            "example": point["example"],
-        })
+        per_10k = (
+            {b: round(c * 10000.0 / han_totals[b], 2) for b, c in counts.items()}
+            if counts
+            else {}
+        )
+        out.append(
+            {
+                "id": point["id"],
+                "pattern": point["pattern"],
+                "tier": point["tier"],
+                "level": point["level"],
+                "starred": point["starred"],
+                "markers": compiled if compiled != "ANOTA" else "A-not-A",
+                "counts": counts,
+                "per_10k_han": per_10k,
+                "first_band": first,
+                "example": point["example"],
+            }
+        )
 
     result = {
         "han_per_band": han_totals,
@@ -131,7 +193,14 @@ def main():
         json.dump(result, f, ensure_ascii=False, indent=1)
 
     attested = [p for p in out if p["first_band"]]
-    print("compiled:", sum(1 for p in out if p["markers"]), "of", len(points), "| attested:", len(attested))
+    print(
+        "compiled:",
+        sum(1 for p in out if p["markers"]),
+        "of",
+        len(points),
+        "| attested:",
+        len(attested),
+    )
     print("first band:", Counter(p["first_band"] for p in attested))
 
 

@@ -22,10 +22,11 @@ manifest["clips"].each do |row|
   hits = segments.select { |segment| emoji_map.key?(segment) && !emoji_map[segment]["ambiguous"] }
   emojis = hits.map { |word| emoji_map[word]["emoji"] }.uniq
 
-  reason =
-    if row["text"].scan(/\p{Han}/).size < MIN_HAN then :too_short
-    elsif emojis.size != 1 then :no_single_emoji
-    end
+  reason = if row["text"].scan(/\p{Han}/).size < MIN_HAN
+    :too_short
+  elsif emojis.size != 1
+    :no_single_emoji
+  end
 
   if reason
     rejected[reason] += 1
@@ -44,6 +45,6 @@ end
 
 File.write(manifest_path, JSON.pretty_generate(manifest))
 levels = manifest["clips"].select { |row| row["emoji"] }.group_by { |row| row["level"] }.transform_values(&:size)
-puts "emoji-annotated: #{annotated} of #{manifest["clips"].size}"
-puts "by level: #{levels.sort.to_h}"
-puts "rejected: #{rejected.sort_by { |_, v| -v }.to_h}"
+puts("emoji-annotated: #{annotated} of #{manifest["clips"].size}")
+puts("by level: #{levels.sort.to_h}")
+puts("rejected: #{rejected.sort_by { |_, v| -v }.to_h}")

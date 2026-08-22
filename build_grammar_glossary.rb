@@ -17,9 +17,11 @@ end
 
 wanted = lessons.flat_map { |lesson| runs_in.call(lesson) }.uniq
 
-chunks = wanted.flat_map do |piece|
-  (1..piece.length).flat_map { |length| (0..piece.length - length).map { |start| piece[start, length] } }
-end.uniq
+chunks = wanted
+  .flat_map do |piece|
+    (1..piece.length).flat_map { |length| (0..piece.length - length).map { |start| piece[start, length] } }
+  end
+  .uniq
 
 vocab = {}
 chunks.each_slice(5000) do |slice|
@@ -54,6 +56,7 @@ segment = lambda do |piece|
     parts << piece[index, length]
     index += length
   end
+
   parts
 end
 
@@ -75,12 +78,14 @@ reading = lambda do |text|
         z = part.chars.map { |char| (entry = vocab[char]) ? reading_of.call(entry, "zhuyin").first : nil }
         p = part.chars.map { |char| (entry = vocab[char]) ? reading_of.call(entry, "pinyin").first : nil }
       end
+
       return nil if z.any?(&:nil?) || z.size != part.length
 
       zhuyin.concat(z)
       pinyin.concat(p.map { |syllable| syllable || "" })
     end
   end
+
   return nil if zhuyin.size != text.scan(han).size
 
   {"zhuyin" => zhuyin.join(" "), "pinyin" => pinyin.join(" ")}

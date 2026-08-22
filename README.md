@@ -41,40 +41,40 @@ lexical detectors fire on the converted and translated ones alone.
 
 ### Licenses permitting commercial use
 
-| Source | Register | License |
-| --- | --- | --- |
-| [全國法規資料庫](https://law.moj.gov.tw/) — Laws & Regulations Database | official | OGDL v1 |
-| [教育部重編國語辭典修訂本](https://dict.revised.moe.edu.tw/) — MOE Revised Dictionary | academic | CC BY-ND 3.0 TW |
-| [教育部國語辭典簡編本](https://dict.concised.moe.edu.tw/) — MOE Concised Dictionary | academic | CC BY-ND 3.0 TW |
-| [教育部成語典](https://dict.idioms.moe.edu.tw/) — MOE Dictionary of Idioms | literary | CC BY-ND 3.0 TW |
-| [國家教育研究院 TBCL](https://coct.naer.edu.tw/) — NAER proficiency benchmark examples | colloquial | NAER open government declaration |
-| [樂詞網](https://terms.naer.edu.tw/) — NAER bilingual terminology, signage and counters | official | NAER open government declaration |
-| [全國姓名統計分析](https://www.ris.gov.tw/) — Ministry of the Interior naming statistics | reference | OGDL v1 |
-| [全字庫 CNS 11643](https://www.cns11643.gov.tw/) — components, stroke order, zhuyin, syllable recordings | reference | OGDL v1 or SIL OFL 1.1 |
-| [小學堂](https://xiaoxue.iis.sinica.edu.tw/) — 廣韻 rhyme tables, Academia Sinica | reference | CC0 1.0 |
-| [立法院開放資料](https://data.ly.gov.tw/) — Legislative Yuan Open Data | colloquial | OGDL v1 |
-| [新北市政府開放資料](https://data.ntpc.gov.tw/) — New Taipei City press releases | publicistic | Copyright Act art. 9 + OGDL v1 |
-| ROC ministry press releases | publicistic | Copyright Act art. 9 (not subject to copyright) |
-| [Mozilla Common Voice](https://commonvoice.mozilla.org/) (zh-TW) | colloquial | CC0 1.0 |
-| [維基百科](https://zh.wikipedia.org/) — Chinese Wikipedia | academic | CC BY-SA 4.0 |
-| [維基詞典](https://zh.wiktionary.org/) — Wiktionary | academic | CC BY-SA 4.0 |
-| [維基導遊](https://zh.wikivoyage.org/) — Wikivoyage, Taiwan articles | publicistic | CC BY-SA 4.0 |
-| [維基文庫](https://zh.wikisource.org/) — Taiwanese vernacular literature | literary | public domain |
+| Source                                                                                                   | Register    | License                                         |
+| -------------------------------------------------------------------------------------------------------- | ----------- | ----------------------------------------------- |
+| [全國法規資料庫](https://law.moj.gov.tw/) — Laws & Regulations Database                                  | official    | OGDL v1                                         |
+| [教育部重編國語辭典修訂本](https://dict.revised.moe.edu.tw/) — MOE Revised Dictionary                    | academic    | CC BY-ND 3.0 TW                                 |
+| [教育部國語辭典簡編本](https://dict.concised.moe.edu.tw/) — MOE Concised Dictionary                      | academic    | CC BY-ND 3.0 TW                                 |
+| [教育部成語典](https://dict.idioms.moe.edu.tw/) — MOE Dictionary of Idioms                               | literary    | CC BY-ND 3.0 TW                                 |
+| [國家教育研究院 TBCL](https://coct.naer.edu.tw/) — NAER proficiency benchmark examples                   | colloquial  | NAER open government declaration                |
+| [樂詞網](https://terms.naer.edu.tw/) — NAER bilingual terminology, signage and counters                  | official    | NAER open government declaration                |
+| [全國姓名統計分析](https://www.ris.gov.tw/) — Ministry of the Interior naming statistics                 | reference   | OGDL v1                                         |
+| [全字庫 CNS 11643](https://www.cns11643.gov.tw/) — components, stroke order, zhuyin, syllable recordings | reference   | OGDL v1 or SIL OFL 1.1                          |
+| [小學堂](https://xiaoxue.iis.sinica.edu.tw/) — 廣韻 rhyme tables, Academia Sinica                        | reference   | CC0 1.0                                         |
+| [立法院開放資料](https://data.ly.gov.tw/) — Legislative Yuan Open Data                                   | colloquial  | OGDL v1                                         |
+| [新北市政府開放資料](https://data.ntpc.gov.tw/) — New Taipei City press releases                         | publicistic | Copyright Act art. 9 + OGDL v1                  |
+| ROC ministry press releases                                                                              | publicistic | Copyright Act art. 9 (not subject to copyright) |
+| [Mozilla Common Voice](https://commonvoice.mozilla.org/) (zh-TW)                                         | colloquial  | CC0 1.0                                         |
+| [維基百科](https://zh.wikipedia.org/) — Chinese Wikipedia                                                | academic    | CC BY-SA 4.0                                    |
+| [維基詞典](https://zh.wiktionary.org/) — Wiktionary                                                      | academic    | CC BY-SA 4.0                                    |
+| [維基導遊](https://zh.wikivoyage.org/) — Wikivoyage, Taiwan articles                                     | publicistic | CC BY-SA 4.0                                    |
+| [維基文庫](https://zh.wikisource.org/) — Taiwanese vernacular literature                                 | literary    | public domain                                   |
 
 ### Non-commercial or unresolved licenses
 
 Used for frequency statistics and model fitting only. No text from these
 sources is redistributed.
 
-| Source | Register | License |
-| --- | --- | --- |
-| [TED](https://www.ted.com/) — TED2020 subtitles | academic | CC BY-NC-ND 4.0 |
-| Taiwan Text Excellence — Taiwanese news, published as a research dataset | publicistic | CC BY-NC-SA 4.0 |
-| [OPUS](https://opus.nlpl.eu/) — OpenSubtitles, zh-TW portion | subtitles | rights held by the film rightsholders |
-| PTT Gossiping corpus — forum threads, published as a research dataset | internet | Apache-2.0 for the corpus; post authors' rights not cleared |
-| [YouTube](https://www.youtube.com/) — comments, read through the public Data API | internet | rights held by the comment authors |
-| [方格子 vocus](https://vocus.cc/) — contemporary prose | literary | rights held by the article authors |
-| [台灣光華雜誌](https://www.taiwan-panorama.com/) — Taiwan Panorama | publicistic | unresolved |
+| Source                                                                           | Register    | License                                                     |
+| -------------------------------------------------------------------------------- | ----------- | ----------------------------------------------------------- |
+| [TED](https://www.ted.com/) — TED2020 subtitles                                  | academic    | CC BY-NC-ND 4.0                                             |
+| Taiwan Text Excellence — Taiwanese news, published as a research dataset         | publicistic | CC BY-NC-SA 4.0                                             |
+| [OPUS](https://opus.nlpl.eu/) — OpenSubtitles, zh-TW portion                     | subtitles   | rights held by the film rightsholders                       |
+| PTT Gossiping corpus — forum threads, published as a research dataset            | internet    | Apache-2.0 for the corpus; post authors' rights not cleared |
+| [YouTube](https://www.youtube.com/) — comments, read through the public Data API | internet    | rights held by the comment authors                          |
+| [方格子 vocus](https://vocus.cc/) — contemporary prose                           | literary    | rights held by the article authors                          |
+| [台灣光華雜誌](https://www.taiwan-panorama.com/) — Taiwan Panorama               | publicistic | unresolved                                                  |
 
 The application separates the two classes at import and records the license of
 every source beside the material derived from it.

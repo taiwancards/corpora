@@ -39,6 +39,7 @@ def merge_counts(partials)
       counts.each { |token, count| merged[side][token] += count }
     end
   end
+
   merged
 end
 
@@ -231,7 +232,10 @@ Corpus.say(format("pass 0 (unigram): host counts %d, contexts %d, bigrams %d", t
 BIGRAM_ROUNDS.times do |step|
   table, weights, continuation = kneser_ney(bigrams, history, preceders, discount_for(bigrams), SMOOTH_MIN)
   current = BigramModel::Model.new(
-    table: table, weights: weights, continuation: continuation, unigram: BigramModel.unigram_probabilities
+    table: table,
+    weights: weights,
+    continuation: continuation,
+    unigram: BigramModel.unigram_probabilities
   )
 
   bigrams = nil

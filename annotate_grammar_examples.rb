@@ -14,7 +14,9 @@ segments_needed = texts.flat_map { |t| t.scan(/\p{Han}+/) }.uniq
 sentences = Lexeme.where(kind: :sentence, text: texts).index_by(&:text)
 
 vocab = {}
-chunks = segments_needed.flat_map { |run| (1..run.length).flat_map { |len| (0..run.length - len).map { |i| run[i, len] } } }.uniq
+chunks = segments_needed
+  .flat_map { |run| (1..run.length).flat_map { |len| (0..run.length - len).map { |i| run[i, len] } } }
+  .uniq
 chunks.each_slice(5000) do |slice|
   Lexeme.where(kind: %i[word character], text: slice).where.not(readings: {}).each do |lexeme|
     vocab[lexeme.text] ||= lexeme
@@ -58,11 +60,13 @@ annotate = lambda do |text, segments|
       z = segment.chars.map { |ch| (c = vocab[ch]) ? reading_of.call(c, "zhuyin").first : nil }
       p = segment.chars.map { |ch| (c = vocab[ch]) ? reading_of.call(c, "pinyin").first : nil }
     end
+
     return nil if z.any?(&:nil?) || z.size != segment.length
 
     zhuyin.concat(z)
     pinyin.concat(p.map { |syl| syl || "" })
   end
+
   return nil if zhuyin.size != text.scan(han).size
 
   [zhuyin.join(" "), pinyin.join(" ")]
@@ -83,6 +87,7 @@ greedy = lambda do |text|
       runs << chunk
     end
   end
+
   runs
 end
 
@@ -100,6 +105,7 @@ lessons.each do |lesson|
     else
       example.delete("sentence")
     end
+
     if result
       example["zhuyin"], example["pinyin"] = result
       example["segments"] = segments
@@ -114,5 +120,5 @@ lessons.each do |lesson|
 end
 
 File.write(path, JSON.pretty_generate(lessons))
-puts "annotated: #{annotated}, missing readings: #{missing.size}"
-missing.first(10).each { |t| puts "  #{t}" }
+puts("annotated: #{annotated}, missing readings: #{missing.size}")
+missing.first(10).each { |t| puts("  #{t}") }

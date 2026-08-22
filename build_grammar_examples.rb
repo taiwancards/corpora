@@ -20,8 +20,10 @@ matcher = lambda do |text, markers|
           i = text.index(m, p)
           i && (p = i + m.length)
         end
+
         best = p if ok && (best.nil? || p < best)
       end
+
       best && (pos = best)
     end
   end
@@ -45,31 +47,38 @@ scope.find_each(batch_size: 2000) do |sentence|
       true
     else
       if sentence.tbcl_half.to_i <= point["level"].to_i && matcher.call(sentence.text, point["markers"])
-        bucket << {
-          "text" => sentence.text,
-          "en" => sentence.meanings&.dig("en"),
-          "ru" => sentence.meanings&.dig("ru"),
-          "tbcl" => sentence.tbcl_half,
-          "difficulty" => sentence.difficulty
-        }
+        bucket <<
+          {
+            "text" => sentence.text,
+            "en" => sentence.meanings&.dig("en"),
+            "ru" => sentence.meanings&.dig("ru"),
+            "tbcl" => sentence.tbcl_half,
+            "difficulty" => sentence.difficulty
+          }
       end
+
       bucket.size >= 5
     end
   end
+
   break if active.empty?
 end
 
 File.open(File.join(root, "data/huayu/tbcl_grammar_examples.jsonl"), "w") do |f|
   points.each do |point|
-    f.puts(JSON.generate({
-      "id" => point["id"],
-      "pattern" => point["pattern"],
-      "level" => point["level"],
-      "examples" => buckets[point["id"]]
-    }))
+    f.puts(
+      JSON.generate(
+        {
+          "id" => point["id"],
+          "pattern" => point["pattern"],
+          "level" => point["level"],
+          "examples" => buckets[point["id"]]
+        }
+      )
+    )
   end
 end
 
 filled = buckets.values.count { |b| b.size >= 5 }
 some = buckets.values.count(&:any?)
-puts "points with 5 examples: #{filled}, with any: #{some}, total: #{points.size}"
+puts("points with 5 examples: #{filled}, with any: #{some}, total: #{points.size}")
