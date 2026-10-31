@@ -4,6 +4,7 @@ require "json"
 
 ROOT = File.expand_path("..", __dir__)
 PATH = File.join(ROOT, "data/huayu/course_lessons.json")
+LANGS = %w[en ru vi].freeze
 
 KINDS = %w[word collocation measure_word phrase character].freeze
 RANK = KINDS.each_with_index.to_h { |kind, index| [kind, index] }
@@ -274,7 +275,7 @@ analyzer = Huayu::TextAnalyzer.new(locale: :en)
 POOL = lessons
   .flat_map do |lesson|
     lesson["vocabulary"].map { |word|
-      word.slice("zh", "en", "ru", "pos", "zhuyin").merge("lesson" => lesson["number"])
+      word.slice("zh", *LANGS, "pos", "zhuyin").merge("lesson" => lesson["number"])
     }
   end
   .freeze
@@ -293,7 +294,7 @@ STREET = lessons
   .flat_map { |lesson| Array(lesson["usage"]).map { |entry| entry.merge("lesson" => lesson["number"]) } }
   .freeze
 
-def gloss_of(word) = {"en" => word["en"], "ru" => word["ru"]}
+def gloss_of(word) = word.slice(*LANGS)
 
 def near(rng, candidates, correct, distinct)
   candidates
@@ -418,7 +419,7 @@ def build_tasks(lesson, analyzer, rng, want_street: true)
         pick(rng, POOL, word, SAME_WORD),
         -> (other) { other["zh"] },
         "zh" => line["zh"].sub(word["zh"], "＿＿"),
-        "gloss" => {"en" => line["en"], "ru" => line["ru"]}
+        "gloss" => line.slice(*LANGS)
       )
   end
 
@@ -436,7 +437,7 @@ def build_tasks(lesson, analyzer, rng, want_street: true)
         pick(rng, others, {"zh" => answer["zh"], "lesson" => lesson["number"]}, SAME_LINE),
         -> (reply) { reply["zh"] },
         "zh" => ask["zh"],
-        "gloss" => {"en" => ask["en"], "ru" => ask["ru"]}
+        "gloss" => ask.slice(*LANGS)
       )
   end
 
@@ -455,7 +456,7 @@ def build_tasks(lesson, analyzer, rng, want_street: true)
       tasks <<
         {
           "kind" => "order",
-          "gloss" => {"en" => source["en"], "ru" => source["ru"]},
+          "gloss" => source.slice(*LANGS),
           "chunks" => chunks,
           "order" => shuffled(rng, chunks.size),
           "answer" => 0
@@ -465,9 +466,9 @@ def build_tasks(lesson, analyzer, rng, want_street: true)
 
   usable = lines.select { |line| line["zh"].length.between?(4, 18) }
   pairs = if usable.size >= 4
-    usable.shuffle(random: rng).first(4).map { |line| {"zh" => line["zh"], "en" => line["en"], "ru" => line["ru"]} }
+    usable.shuffle(random: rng).first(4).map { |line| line.slice("zh", *LANGS) }
   else
-    vocab.shuffle(random: rng).first(4).map { |word| {"zh" => word["zh"], "en" => word["en"], "ru" => word["ru"]} }
+    vocab.shuffle(random: rng).first(4).map { |word| word.slice("zh", *LANGS) }
   end
 
   tasks << {"kind" => "pair", "pairs" => pairs, "order" => shuffled(rng, pairs.size), "answer" => 0} if pairs.size == 4
