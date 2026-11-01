@@ -11,7 +11,7 @@ run = /\p{Han}(?:[\p{Han}，、：；]*\p{Han})?/
 
 runs_in = lambda do |lesson|
   sources = [lesson["pattern"], lesson["head"]] +
-    %w[en ru].flat_map { |locale| lesson[locale].values_at("title", "body", "tip") }
+    %w[en ru vi].flat_map { |locale| lesson[locale]&.values_at("title", "body", "tip") || [] }
   sources.compact.flat_map { |text| text.scan(run) }.map { |text| text.gsub(/\P{Han}/, "") }.reject(&:empty?).uniq
 end
 

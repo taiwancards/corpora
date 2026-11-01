@@ -14,7 +14,7 @@ kept = entries.filter_map do |entry|
   trimmed = Huayu::SentenceText.trim(entry.text)
   if trimmed != entry.text && sentences.exists?(text: trimmed)
     rekeyed += 1
-    next Huayu::SentenceGlossStore::Entry.new(text: trimmed, en: entry.en, ru: entry.ru)
+    next entry.with(text: trimmed)
   end
 
   dropped += 1

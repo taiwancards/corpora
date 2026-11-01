@@ -27,7 +27,12 @@ entries = rows.filter_map do |row|
     next
   end
 
-  Huayu::SentenceGlossStore::Entry.new(text: text, en: row["en"].strip, ru: row["ru"].strip)
+  Huayu::SentenceGlossStore::Entry.new(
+    text: text,
+    en: row["en"].strip,
+    ru: row["ru"].strip,
+    vi: row["vi"].to_s.strip.presence
+  )
 end
 
 added = Huayu::SentenceGlossStore.append(entries)

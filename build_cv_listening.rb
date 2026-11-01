@@ -59,7 +59,8 @@ wanted = Lexeme
       "difficulty" => row.difficulty,
       "han_length" => row.han_length,
       "en" => row.meanings&.dig("en"),
-      "ru" => row.meanings&.dig("ru")
+      "ru" => row.meanings&.dig("ru"),
+      "vi" => row.meanings&.dig("vi")
     }
   end
 
