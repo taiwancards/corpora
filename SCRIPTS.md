@@ -121,8 +121,10 @@ Under `rails/`. These need the application environment.
 | `merge_collocation_glosses.rb`        | same, for collocations                                                                       | `bin/rails runner corpora/rails/merge_collocation_glosses.rb <file>` |
 | `merge_sentence_glosses.rb`           | same, for sentences                                                                          | `bin/rails runner corpora/rails/merge_sentence_glosses.rb <file>`    |
 | `rekey_sentence_glosses.rb`           | re-attaches sentence glosses whose key changed under punctuation trimming, drops the orphans | `bin/rails runner corpora/rails/rekey_sentence_glosses.rb`           |
-| `export_content.sh`                   | dump dictionary content, no user data                                                        | `bash corpora/rails/export_content.sh`                               |
-| `import_content.sh`                   | load such a dump into a target database                                                      | `bash corpora/rails/import_content.sh <url> <file>`                  |
+
+A dump of the whole dictionary content goes through the application:
+`bin/rails content:dump`, then `DUMP=… CONFIRM=yes bin/rails content:restore`
+on the target.
 
 ## Libraries
 
