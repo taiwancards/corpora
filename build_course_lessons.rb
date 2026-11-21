@@ -4,7 +4,7 @@ require "json"
 
 ROOT = File.expand_path("..", __dir__)
 PATH = File.join(ROOT, "data/huayu/course_lessons.json")
-LANGS = %w[en ru vi].freeze
+LANGS = %w[en ru vi de ind].freeze
 
 KINDS = %w[word collocation measure_word phrase character].freeze
 RANK = KINDS.each_with_index.to_h { |kind, index| [kind, index] }
