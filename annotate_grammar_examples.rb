@@ -5,6 +5,7 @@ require "json"
 root = File.expand_path("..", __dir__)
 path = File.join(root, "data/huayu/grammar_lessons.json")
 lessons = JSON.parse(File.read(path))
+overrides = JSON.parse(File.read(File.join(__dir__, "grammar_reading_overrides.json")))
 
 han = /\p{Han}/
 
@@ -72,6 +73,40 @@ annotate = lambda do |text, segments|
   [zhuyin.join(" "), pinyin.join(" ")]
 end
 
+syllables_of = lambda do |token|
+  return [token] if token.empty?
+
+  split = Huayu::Zhuyin.syllabify(token)&.map { |entry| entry["pinyin"] }
+  raise("cannot split the pinyin #{token.inspect}") unless split&.join == token.downcase
+
+  offset = 0
+  split.map do |syllable|
+    piece = token[offset, syllable.length]
+    offset += syllable.length
+    piece
+  end
+end
+
+overridden = lambda do |text, zhuyin, pinyin|
+  fixes = overrides[text]
+  return [zhuyin, pinyin] unless fixes
+
+  zy = zhuyin.split(" ")
+  py = pinyin.split(" ", -1).map { |token| syllables_of.call(token) }
+  slots = py.each_with_index.flat_map { |token, t| token.each_index.map { |s| [t, s] } }
+  raise("#{text}: #{slots.size} pinyin syllables for #{zy.size} characters") unless slots.size == zy.size
+
+  fixes.each do |index, (reading, latin)|
+    position = Integer(index)
+    raise("#{text}: no character at #{index}") unless position < zy.size
+
+    zy[position] = reading
+    t, s = slots[position]
+    py[t][s] = latin
+  end
+  [zy.join(" "), py.map(&:join).join(" ")]
+end
+
 greedy = lambda do |text|
   runs = []
   text.scan(/\p{Han}+|[^\p{Han}]+/) do |chunk|
@@ -100,6 +135,7 @@ lessons.each do |lesson|
     segments = db ? Array(db.data["segments"]) : []
     segments = greedy.call(text) if segments.empty?
     result = annotate.call(text, segments)
+    result = overridden.call(text, *result) if result
     if db&.public_id
       example["sentence"] = db.public_id
     else
@@ -122,3 +158,6 @@ end
 File.write(path, JSON.pretty_generate(lessons))
 puts("annotated: #{annotated}, missing readings: #{missing.size}")
 missing.first(10).each { |t| puts("  #{t}") }
+unused = overrides.keys - texts
+puts("reading overrides without an example: #{unused.size}")
+unused.each { |t| puts("  #{t}") }
