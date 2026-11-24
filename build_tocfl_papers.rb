@@ -1,12 +1,24 @@
 # frozen_string_literal: true
 
+require "fileutils"
 require "json"
 require "open3"
+require "set"
+
+require_relative "lib/tocfl/audio"
+require_relative "lib/tocfl/bundle"
+require_relative "lib/tocfl/catalog"
+require_relative "lib/tocfl/cover"
+require_relative "lib/tocfl/scale"
 
 root = File.expand_path("..", __dir__)
 papers_dir = File.join(root, "data/tocfl_official/papers")
 media_dir = File.join(root, "media/tocfl_official")
+bundles_dir = File.join(root, "data/tocfl_official/bundles")
 out = File.join(root, "data/huayu/tocfl_papers.json")
+only = ARGV.reject { |arg| arg.start_with?("--") }.to_set
+skip_bundles = ARGV.include?("--keys-only")
+write_index = ARGV.include?("--write-index")
 
 unless File.directory?(papers_dir)
   puts("no official papers under #{papers_dir}")
@@ -41,136 +53,11 @@ sequence = lambda do |pairs, label|
   answers
 end
 
-SETS = [
-  {
-    band: "Novice",
-    set: 1,
-    level: "Novice 1–2",
-    audio: "mock_Novice_mp3_en",
-    reading: "rd_mock_test_Novice_en_201811_t.pdf",
-    listening: "ls_mock_test_Novice_en_201811_t.pdf",
-    transcript: "ls_mock_test_Novice_listen.pdf",
-    key: "mock_test_Novice_answer.pdf",
-    combined: true
-  },
-  {
-    band: "A",
-    set: 1,
-    level: "A1–A2",
-    audio: "mock_BandA_mp3_en",
-    reading: "rd_mock_test_BandA_en_t.pdf",
-    reading_key: "rd_mock_test_BandA_answer.pdf",
-    listening: "ls_mock_test_BandA_en_t.pdf",
-    listening_key: "ls_mock_test_BandA_answer.pdf",
-    transcript: "ls_mock_test_BandA_listen.pdf"
-  },
-  {
-    band: "A",
-    set: 2,
-    level: "A1–A2",
-    audio: "mock2_BandA_mp3_en",
-    reading: "rd_mock2_test_BandA_en_t.pdf",
-    reading_key: "rd_mock2_test_BandA_answer.pdf",
-    listening: "ls_mock2_test_BandA_en_t.pdf",
-    listening_key: "ls_mock2_test_BandA_answer.pdf",
-    transcript: "ls_mock2_test_BandA_listen.pdf"
-  },
-  {
-    band: "A",
-    set: 3,
-    level: "A1–A2",
-    audio: "mock3_BandA_mp3_en",
-    reading: "rd_mock3_test_BandA_en_t.pdf",
-    reading_key: "rd_mock3_test_BandA_answer.pdf",
-    listening: "ls_mock3_test_BandA_en_t.pdf",
-    listening_key: "ls_mock3_test_BandA_answer.pdf",
-    transcript: "ls_mock3_test_BandA_listen.pdf"
-  },
-  {
-    band: "A",
-    set: 4,
-    level: "A1–A2",
-    audio: "mock4_BandA_mp3_en",
-    reading: "rd_mock4_test_BandA_en_t.pdf",
-    reading_key: "rd_mock4_test_BandA_answer.pdf",
-    listening: "ls_mock4_test_BandA_en_t.pdf",
-    listening_key: "ls_mock4_test_BandA_answer.pdf",
-    transcript: "ls_mock4_test_BandA_listen.pdf"
-  },
-  {
-    band: "A",
-    set: 5,
-    level: "A1–A2",
-    audio: "mock5_BandA_mp3_en",
-    reading: "rd_mock5_test_BandA_en_t.pdf",
-    reading_key: "rd_mock5_test_BandA_answer.pdf",
-    listening: "ls_mock5_test_BandA_en_t.pdf",
-    listening_key: "ls_mock5_test_BandA_answer.pdf",
-    transcript: "ls_mock5_test_BandA_listen.pdf"
-  },
-  {
-    band: "B",
-    set: 1,
-    level: "B1–B2",
-    audio: "mock_BandB_mp3",
-    reading: "rd_mock_test_BandB_t.pdf",
-    reading_key: "rd_mock_test_BandB_answer.pdf",
-    listening: "ls_mock_test_BandB_t.pdf",
-    listening_key: "ls_mock_test_BandB_answer.pdf",
-    transcript: "ls_mock_test_BandB_listen.pdf"
-  },
-  {
-    band: "B",
-    set: 2,
-    level: "B1–B2",
-    audio: "mock2_BandB_mp3",
-    reading: "rd_mock2_test_BandB_t.pdf",
-    reading_key: "rd_mock2_test_BandB_answer_t.pdf",
-    listening: "ls_mock2_test_BandB_t.pdf",
-    listening_key: "ls_mock2_test_BandB_answer.pdf",
-    transcript: "ls_mock2_test_BandB_listen.pdf"
-  },
-  {
-    band: "B",
-    set: 3,
-    level: "B1–B2",
-    audio: "mock3_BandB_mp3",
-    reading: "rd_mock3_test_BandB_t.pdf",
-    reading_key: "rd_mock3_test_BandB_answer.pdf",
-    listening: "ls_mock3_test_BandB_t.pdf",
-    listening_key: "ls_mock3_test_BandB_answer.pdf",
-    transcript: "ls_mock3_test_BandB_listen.pdf"
-  },
-  {
-    band: "B",
-    set: 4,
-    level: "B1–B2",
-    audio: "mock4_BandB_mp3",
-    reading: "rd_mock4_test_BandB_t.pdf",
-    reading_key: "rd_mock4_test_BandB_answer.pdf",
-    listening: "ls_mock4_test_BandB_t.pdf",
-    listening_key: "ls_mock4_test_BandB_answer.pdf",
-    transcript: "ls_mock4_test_BandB_listen.pdf"
-  },
-  {
-    band: "B",
-    set: 5,
-    level: "B1–B2",
-    audio: "mock5_BandB_mp3",
-    reading: "rd_mock5_test_BandB_t.pdf",
-    reading_key: "rd_mock5_test_BandB_answer.pdf",
-    listening: "ls_mock5_test_BandB_t.pdf",
-    listening_key: "ls_mock5_test_BandB_answer.pdf",
-    transcript: "ls_mock5_test_BandB_listen.pdf"
-  }
-].freeze
-
 OPTION_LINE = /\A\s*[(（]\s*([A-F])\s*[)）]\s*(.*)\z/
 QUESTION_LINE = /\A\s*(\d{1,3})\s*[.．]\s*(.*)\z/
 PASSAGE_MARK = /\A\s*[(（]\s*[一二三四五六七八九十]\s*[)）]\s*\z/
 BOILERPLATE = /第\s*[一二三四五六七八九]\s*部分|Part\s+\d|例題|作答|測驗|Page|TOCFL|華語文能力測驗/
 GAP_MARK = /[　\s]{4,}|＿|_{2,}/
-MIN_CONTEXT = 40
 
 parse_items = lambda do |file|
   path = File.join(papers_dir, file)
@@ -237,6 +124,7 @@ certain_items = lambda do |slug, file, answers|
     letter = answers[item["number"].to_s]
     next false if letter.nil?
     next false unless item["options"].key?(letter)
+
     letters = item["options"].keys.sort
     next false unless [3, 4].include?(letters.size)
     next false unless letters == %w[A B C D].first(letters.size)
@@ -265,8 +153,10 @@ clips_for = lambda do |folder|
   Dir.glob(File.join(path, "**", "*.mp3")).map { |file| file.delete_prefix("#{path}/") }.sort
 end
 
+scales = Tocfl::Scale.new(papers_dir).load
 papers = []
-SETS.each do |entry|
+reports = []
+Tocfl::Catalog.sets.each do |entry|
   band = entry[:band]
   slug_base = "#{band.downcase}-set#{entry[:set]}"
 
@@ -290,11 +180,53 @@ SETS.each do |entry|
     paper = entry[skill.to_sym]
     next unless File.exist?(File.join(papers_dir, paper))
 
-    items = skill == "reading" ? certain_items.call("#{slug_base}-#{skill}", paper, answers) : []
+    slug = "#{slug_base}-#{skill}"
+    items = skill == "reading" ? certain_items.call(slug, paper, answers) : []
+    bundle_file = File.join(bundles_dir, slug, "bundle.json")
+
+    if !skip_bundles && (only.empty? || only.include?(slug))
+      editions = (entry[:editions] || {}).filter_map do |code, edition|
+        file = edition[skill.to_sym]
+        next unless File.exist?(File.join(papers_dir, file))
+
+        {code: code, paper: file, audio: skill == "listening" ? edition[:audio] : nil}
+      end
+
+      spec = {
+        slug: slug,
+        band: band,
+        set: entry[:set],
+        skill: skill,
+        paper: paper,
+        transcript: skill == "listening" ? entry[:transcript] : nil,
+        audio: skill == "listening" ? entry[:audio] : nil,
+        answers: answers,
+        levels: Tocfl::Catalog::LEVELS[band],
+        minutes: Tocfl::Cover.minutes(Tocfl::Document.new(File.join(papers_dir, paper))),
+        scale: scales.for(band, skill, entry[:set]),
+        editions: editions
+      }
+      begin
+        reports <<
+          Tocfl::Bundle.new(spec, papers_dir: papers_dir, media_dir: media_dir, out_dir: bundles_dir).build.report
+      rescue StandardError => error
+        FileUtils.rm_rf(File.join(bundles_dir, ".#{slug}.building"))
+        reports <<
+          {
+            slug: slug,
+            problems: ["build failed: #{error.class}: #{error.message} at #{error.backtrace.first}"],
+            notes: [],
+            text_items: 0,
+            image_items: 0,
+            images: 0,
+            image_bytes: 0
+          }
+      end
+    end
 
     papers <<
       {
-        "slug" => "#{slug_base}-#{skill}",
+        "slug" => slug,
         "band" => band,
         "set" => entry[:set],
         "level" => entry[:level],
@@ -305,16 +237,22 @@ SETS.each do |entry|
         "clips" => (skill == "listening" ? clips_for.call(entry[:audio]) : []),
         "answers" => answers,
         "count" => answers.size,
-        "items" => items
+        "items" => items,
+        "bundle" => (File.exist?(bundle_file) ? "tocfl_official/bundles/#{slug}/bundle.json" : nil)
       }.compact
   end
 end
 
-File.write(out, "#{JSON.pretty_generate({"papers" => papers})}\n")
+Tocfl::Audio.save
+
+if write_index
+  File.write(out, "#{JSON.pretty_generate({"papers" => papers})}\n")
+  puts("wrote #{out}")
+end
 
 puts("papers: #{papers.size}, questions: #{papers.sum { |paper| paper["count"] }}")
 puts("questions rendered as interactive items: #{papers.sum { |paper| paper["items"].size }}")
-puts("papers dropped for untrustworthy layout: #{dropped_papers.join(", ").presence || "none"}")
+puts("papers dropped for untrustworthy layout: #{dropped_papers.empty? ? "none" : dropped_papers.join(", ")}")
 papers.group_by { |paper| paper["band"] }.each do |band, rows|
   puts(
     "  band #{band}: #{rows.size} papers, #{rows.sum { |paper| paper["count"] }} questions, #{rows.sum { |paper| paper["clips"].size }} clips"
@@ -323,3 +261,22 @@ end
 
 puts("numbering repaired: #{repaired.size}")
 repaired.first(10).each { |line| puts("  #{line}") }
+
+reports.each do |report|
+  puts(
+    format(
+      "%-22s text %3d  image-only %3d  pictures %3d  images %4d  %7.1f KB  editions %7.1f KB",
+      report[:slug],
+      report[:text_items],
+      report[:image_items],
+      report[:picture_items].to_i,
+      report[:images],
+      report[:image_bytes] / 1024.0,
+      report[:image_bytes_editions].to_i / 1024.0
+    )
+  )
+  puts("    image-only: #{report[:withheld].join(" ")}") if report[:withheld]&.any?
+  report[:notes].each { |note| puts("    · #{note}") }
+  report[:problems].first(12).each { |problem| puts("    ! #{problem}") }
+  puts("    ! … #{report[:problems].size - 12} more") if report[:problems].size > 12
+end

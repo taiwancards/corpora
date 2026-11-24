@@ -14,6 +14,10 @@ SPEAKER = /\A[[:word:]·]{2,20}[：:]/
 STAGE_NOTE = /[（(][^）)]{0,30}[）)]/
 
 TEMPLATE = /\{\{[^{}]*\}\}/
+LISTING = /\{\{[^{}]*?\|[[:space:]]*content[[:space:]]*=([^{}|]*)\}\}/
+CONVERSION = /-\{([^{}]*)\}-/
+TAIWAN_VARIANT = /(?:\A|;)[[:space:]]*zh-(?:tw|hant)[[:space:]]*:([^;]*)/
+TBCL_SPLIT = /[\n；;]| {2,}/
 LINK = /\[\[(?:[^\]|]*\|)?([^\]|]*)\]\]/
 EXTLINK = %r{\[https?://[^\s\]]+\s*([^\]]*)\]}
 MARKUP = /'''?|=+|\*+|#+|\|/
@@ -59,8 +63,15 @@ def pieces_of(line)
   TWFilter::Sentences.split(line, clause: false).filter_map { |piece| Corpus.strip(piece).presence }
 end
 
+def converted(inner)
+  return inner.split("|").last.to_s unless inner.include?(":")
+
+  (inner[TAIWAN_VARIANT, 1] || inner.split(";").first.split(":", 2).last).strip
+end
+
 def clean_wikitext(text)
-  3.times { text = text.gsub(TEMPLATE, "") }
+  text = text.gsub(CONVERSION) { converted(Regexp.last_match(1)) }
+  3.times { text = text.gsub(LISTING, "\\1\n").gsub(TEMPLATE, "") }
   text.gsub(LINK, "\\1").gsub(EXTLINK, "\\1").gsub(TAG, "").gsub(MARKUP, "")
 end
 
@@ -150,7 +161,7 @@ def extract_tbcl
     sheet = Roo::Excelx.new(xlsx.to_s)
     sheet.default_sheet = sheet.sheets.first
     (2..sheet.last_row).each do |number|
-      sheet.row(number).last.to_s.split(/[\n；;]| {2,}/).each do |piece|
+      sheet.row(number).last.to_s.split(TBCL_SPLIT).each do |piece|
         candidate = Corpus.strip(piece)
         out << candidate if han_length(candidate) >= 3 && terminal?(candidate) && OriginFilter.keep?(candidate)
       end
@@ -164,8 +175,8 @@ def extract_tbcl
         cells = row.first.scan(%r{<td[^>]*>(.*?)</td>}m).flatten
         next if cells.length < 12
 
-        cells.last.split(%r{<br\s*/?>}).each do |piece|
-          candidate = Corpus.strip(piece.gsub(TAG, ""))
+        cells.last.split(%r{<br\s*/?>}).flat_map { |cell| cell.gsub(TAG, "").split(TBCL_SPLIT) }.each do |piece|
+          candidate = Corpus.strip(piece)
           out << candidate if han_length(candidate) >= 3 && terminal?(candidate) && OriginFilter.keep?(candidate)
         end
       end

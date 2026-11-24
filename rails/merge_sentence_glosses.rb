@@ -33,7 +33,8 @@ entries = rows.filter_map do |row|
     ru: row["ru"].strip,
     vi: row["vi"].to_s.strip.presence,
     de: row["de"].to_s.strip.presence,
-    ind: row["ind"].to_s.strip.presence
+    ind: row["ind"].to_s.strip.presence,
+    ja: row["ja"].to_s.strip.presence
   )
 end
 

@@ -90,6 +90,7 @@ Produces the files the application reads at runtime.
 | `build_grammar_glossary.rb`    | readings for every Han run in a grammar lesson; adds what is missing and leaves existing entries alone             | `bin/rails runner corpora/build_grammar_glossary.rb`                                          |
 | `build_course_lessons.rb`      | readings for the course vocabulary, plus the practice tasks in every lesson and the test at the end of every level | `bin/rails runner corpora/build_course_lessons.rb`                                            |
 | `build_tocfl_papers.rb`        | answer keys and audio manifests for the official TOCFL mock papers held under `data/tocfl_official`                | `bin/rails runner corpora/build_tocfl_papers.rb`                                              |
+| `build_japanese_bridge.rb`     | Japanese forms, on'yomi, shape patterns and measured reading correspondences for the Japanese edition              | `bin/rails runner corpora/build_japanese_bridge.rb`                                           |
 | `export_dict.rb`               | dictionary export from the database                                                                                | `bin/rails runner corpora/export_dict.rb`                                                     |
 
 ## Evaluation

@@ -282,13 +282,13 @@ module CangjieContent
           "kind" => "note",
           "tone" => "warn",
           "text" => {
-            "ru" => "Сколько бы кодов ни взяла голова, тело всегда берёт свои один-три. Поэтому у 棋, 基, 箕 головы разные, а общее тело 其 всегда набирается 廿一金.",
-            "en" => "However many codes the head takes, the body always takes its own one to three. So 棋, 基 and 箕 have different heads, yet their shared body 其 is always 廿一金."
+            "ru" => "Сколько бы кодов ни взяла голова, тело всегда берёт свои один-три. Поэтому у 棋 и 箕 головы разные, а общее тело 其 всегда набирается 廿一金. В 基 и 期 наоборот: 其 там голова и даёт только 廿金.",
+            "en" => "However many codes the head takes, the body always takes its own one to three. So 棋 and 箕 have different heads, yet their shared body 其 is always 廿一金. In 基 and 期 it is the other way round: 其 is the head and gives only 廿金."
           }
         },
         {
           "kind" => "grid",
-          "title" => {"ru" => "Одно тело, разные головы", "en" => "One body, different heads"},
+          "title" => {"ru" => "其 как тело и как голова", "en" => "其 as body and as head"},
           "chars" => %w[其 棋 基 期]
         }
       ],
@@ -769,8 +769,8 @@ module CangjieContent
           "kind" => "note",
           "tone" => "info",
           "text" => {
-            "ru" => "Две капли 冫 — не вода. Их разбирают на точку и черту, 戈一: 冰, 冷, 決.",
-            "en" => "The two-drop 冫 is not water. It is spelled out as dot plus stroke, 戈一: 冰, 冷, 決."
+            "ru" => "Две капли 冫 — не вода. Их разбирают на точку и черту, 戈一: 冰, 冷. А 決 в Тайване пишется с водой 氵 и начинается с E.",
+            "en" => "The two-drop 冫 is not water. It is spelled out as dot plus stroke, 戈一: 冰, 冷. 決 is written with water 氵 in Taiwan, so it starts on E."
           }
         }
       ],
@@ -925,8 +925,8 @@ module CangjieContent
           "kind" => "note",
           "tone" => "info",
           "text" => {
-            "ru" => "土 стоит на клавише G рядом с 木 (D) и 十 (J). Все три часто встречаются в теле знака подряд: 時 — 日土木戈.",
-            "en" => "土 sits on G next to 木 (D) and 十 (J). All three often turn up in a row inside a body: 時 is 日土木戈."
+            "ru" => "土 стоит на клавише G недалеко от 木 (D) и 十 (J). Все три часто встречаются в теле знака подряд: 時 — 日土木戈.",
+            "en" => "土 sits on G, near 木 (D) and 十 (J). All three often turn up in a row inside a body: 時 is 日土木戈."
           }
         }
       ],

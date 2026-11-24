@@ -8,6 +8,9 @@ require_relative "lib/origin_filter"
 SENSE_SPLIT = /(?:\A|\n|　|[[:space:]])*◎(?:[[:space:]]|　)*|(?:\A|\n)[[:space:]]*[[:digit:]]+\.|(?:\A|\n|　|[[:space:]])*[（(][[:space:]]*[[:digit:]]+[[:space:]]*[)）][[:space:]]*/
 EXAMPLE_MARK = "[例]"
 SENT_END = /[。！？]/
+SYNONYMS = /[[:space:]　]*△[^\n]*/
+NUMBERING = /\A[[:digit:]]+\.[[:space:]　]*/
+CITATION = /(?<=[。！？」』])[[:space:]　]*[（(][^（）()]*[）)][[:space:]　]*\z/
 LEAD_JUNK = /\A[[:space:]◎△▲＊*※]*(?:[（(][[:space:]]*[[:digit:]]+[[:space:]]*[)）]|[[:digit:]]+[.、])?[[:space:]]*/
 ORPHAN_QUOTE = /\A[」』]+|[「『]+\z/
 COLUMNS = {word: "字詞名", gloss: "釋義", zhuyin: "注音一式", pinyin: "漢語拼音"}.freeze
@@ -20,11 +23,26 @@ def han_length(text) = text.unpack("U*").count { |code| code >= 0x4E00 && code <
 
 def split_senses(gloss)
   clean(gloss).then { |text| text.empty? ? [] : text.split(SENSE_SPLIT) }.filter_map { |part|
-    Corpus.strip(part).presence
+    Corpus.strip(Corpus.strip(part).sub(NUMBERING, "").gsub(SYNONYMS, "")).presence
   }
 end
 
-def split_examples(sense)
+def synonyms_in(gloss)
+  clean(gloss)
+    .scan(/△([^\n△◎]*)/)
+    .flatten
+    .filter_map { |item| Corpus.strip(item).delete_suffix("。").presence }
+end
+
+def sentences_of(line, word)
+  line = line.sub(CITATION, "")
+  pieces = line.split(/(?<=[。！？])/)
+  return pieces if pieces.all? { |piece| piece.include?(word) }
+
+  line.include?(word) ? [line] : []
+end
+
+def split_examples(sense, word)
   return [Corpus.strip(sense), []] unless sense.include?(EXAMPLE_MARK)
 
   definition, _, tail = sense.partition(EXAMPLE_MARK)
@@ -36,7 +54,7 @@ def split_examples(sense)
       next [] if stripped.empty?
 
       if stripped.match?(SENT_END)
-        stripped.split(/(?<=[。！？])/)
+        sentences_of(stripped, word)
       else
         stripped.split("、")
       end
@@ -63,6 +81,7 @@ header = sheet.row(1)
 index = COLUMNS.transform_values { |name| header.index(name) or abort("no column #{name}") }
 
 entries = []
+synonyms = Hash.new { |memo, word| memo[word] = [] }
 sentences_total = collocations_total = dropped = 0
 
 (2..sheet.last_row).each do |number|
@@ -71,8 +90,9 @@ sentences_total = collocations_total = dropped = 0
   gloss = row[index[:gloss]]
   next if word.nil? || gloss.nil?
 
+  synonyms[word.to_s] |= synonyms_in(gloss.to_s)
   senses = split_senses(gloss.to_s).filter_map do |raw|
-    definition, items = split_examples(raw)
+    definition, items = split_examples(raw, word.to_s)
     next if items.empty? && definition.end_with?("：", ":")
 
     sentences, collocations = [], []
@@ -106,6 +126,17 @@ end
 
 target = Corpus.write_json(Corpus.corpora("concised.json"), entries)
 
+collocations_by_word = entries.group_by { |entry| entry["word"] }.transform_values do |group|
+  group.flat_map { |entry| entry["senses"].flat_map { |sense| sense["collocations"] } }
+end
+
+listed = synonyms
+  .to_h { |word, list| [word, list - collocations_by_word.fetch(word, [])] }
+  .reject { |_word, list| list.empty? }
+  .sort
+  .to_h
+Corpus.write_json(Corpus.data("huayu/concised_synonyms.json"), listed, pretty: true)
+
 multi = entries.count { |entry| entry["senses"].length > 1 }
 Corpus.report(
   "entries",
@@ -115,3 +146,4 @@ Corpus.report(
 Corpus.report("senses", total: entries.sum { |entry| entry["senses"].length })
 Corpus.report("examples", sentences: sentences_total, collocations: collocations_total)
 Corpus.report("origin filter", dropped: dropped, path: target.basename)
+Corpus.report("synonyms", words: listed.size, total: listed.sum { |_word, list| list.size })

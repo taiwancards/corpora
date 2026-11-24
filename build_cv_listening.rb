@@ -62,7 +62,8 @@ wanted = Lexeme
       "ru" => row.meanings&.dig("ru"),
       "vi" => row.meanings&.dig("vi"),
       "de" => row.meanings&.dig("de"),
-      "ind" => row.meanings&.dig("ind")
+      "ind" => row.meanings&.dig("ind"),
+      "ja" => row.meanings&.dig("ja")
     }
   end
 

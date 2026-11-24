@@ -310,6 +310,7 @@ module Retranscribe
     王陽明
     鄭板橋
     林則徐
+    許不了
   ]
     .to_set
     .freeze

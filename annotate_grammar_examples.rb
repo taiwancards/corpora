@@ -77,7 +77,7 @@ syllables_of = lambda do |token|
   return [token] if token.empty?
 
   split = Huayu::Zhuyin.syllabify(token)&.map { |entry| entry["pinyin"] }
-  raise("cannot split the pinyin #{token.inspect}") unless split&.join == token.downcase
+  raise "cannot split the pinyin #{token.inspect}" unless split&.join == token.downcase
 
   offset = 0
   split.map do |syllable|
@@ -94,16 +94,17 @@ overridden = lambda do |text, zhuyin, pinyin|
   zy = zhuyin.split(" ")
   py = pinyin.split(" ", -1).map { |token| syllables_of.call(token) }
   slots = py.each_with_index.flat_map { |token, t| token.each_index.map { |s| [t, s] } }
-  raise("#{text}: #{slots.size} pinyin syllables for #{zy.size} characters") unless slots.size == zy.size
+  raise "#{text}: #{slots.size} pinyin syllables for #{zy.size} characters" unless slots.size == zy.size
 
   fixes.each do |index, (reading, latin)|
     position = Integer(index)
-    raise("#{text}: no character at #{index}") unless position < zy.size
+    raise "#{text}: no character at #{index}" unless position < zy.size
 
     zy[position] = reading
     t, s = slots[position]
     py[t][s] = latin
   end
+
   [zy.join(" "), py.map(&:join).join(" ")]
 end
 
